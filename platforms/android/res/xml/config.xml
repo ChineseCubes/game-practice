@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="com.chinesecubes.game-practice" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <preference name="loglevel" value="DEBUG" />
+    <preference name="AndroidLaunchMode" value="singleTop" />
+    <feature name="App">
+        <param name="android-package" value="org.apache.cordova.App" />
+    </feature>
+    <name>ChineseCubes Practice Game</name>
+    <description>
+        ChineseCubes Practice Game
+    </description>
+    <author email="cc@chinesecubes.com" href="http://chinesecubes.com/">
+        ChineseCubes Team
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <preference name="Orientation" value="landscape" />
+    <preference name="Fullscreen" value="true" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="HideKeyboardFormAccessoryBar" value="true" />
+</widget>

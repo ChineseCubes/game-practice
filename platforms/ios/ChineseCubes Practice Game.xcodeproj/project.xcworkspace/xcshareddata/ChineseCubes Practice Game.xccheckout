@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>E88D4DAE-7F55-4EAC-B356-9095AE18973C</string>
+	<key>IDESourceControlProjectName</key>
+	<string>ChineseCubes Practice Game</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>8EC827946B16741BCEBBA5A11ACD4FC64CF2E8E7</key>
+		<string>github.com:ChineseCubes/game-practice.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>platforms/ios/ChineseCubes Practice Game.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>8EC827946B16741BCEBBA5A11ACD4FC64CF2E8E7</key>
+		<string>../../../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>github.com:ChineseCubes/game-practice.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>8EC827946B16741BCEBBA5A11ACD4FC64CF2E8E7</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>8EC827946B16741BCEBBA5A11ACD4FC64CF2E8E7</string>
+			<key>IDESourceControlWCCName</key>
+			<string>game-practice</string>
+		</dict>
+	</array>
+</dict>
+</plist>
