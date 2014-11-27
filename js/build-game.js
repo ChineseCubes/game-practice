@@ -596,7 +596,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(14)();
-	exports.push([module.id, "html,\nbody,\ndiv,\nspan,\napplet,\nobject,\niframe,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\np,\nblockquote,\npre,\na,\nabbr,\nacronym,\naddress,\nbig,\ncite,\ncode,\ndel,\ndfn,\nem,\nimg,\nins,\nkbd,\nq,\ns,\nsamp,\nsmall,\nstrike,\nstrong,\nsub,\nsup,\ntt,\nvar,\ndl,\ndt,\ndd,\nol,\nul,\nli,\nfieldset,\nform,\nlabel,\nlegend,\ntable,\ncaption,\ntbody,\ntfoot,\nthead,\ntr,\nth,\ntd {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  outline: 0;\n  font-weight: inherit;\n  font-style: inherit;\n  font-family: inherit;\n  font-size: 100%;\n  vertical-align: baseline;\n}\nbody {\n  line-height: 1;\n  color: #000;\n  background: #fff;\n}\nol,\nul {\n  list-style: none;\n}\ntable {\n  border-collapse: separate;\n  border-spacing: 0;\n  vertical-align: middle;\n}\ncaption,\nth,\ntd {\n  text-align: left;\n  font-weight: normal;\n  vertical-align: middle;\n}\na img {\n  border: none;\n}\nhtml,\nbody,\n#app,\n.talks-screen {\n  height: 100%;\n}\nhtml > .cc-talks,\nbody > .cc-talks,\n#app > .cc-talks,\n.talks-screen > .cc-talks {\n  height: 100%;\n}\nhtml > .cc-talks > .mode-title,\nbody > .cc-talks > .mode-title,\n#app > .cc-talks > .mode-title,\n.talks-screen > .cc-talks > .mode-title,\nhtml > .cc-talks > .mode-game,\nbody > .cc-talks > .mode-game,\n#app > .cc-talks > .mode-game,\n.talks-screen > .cc-talks > .mode-game {\n  height: 100%;\n}\nbody {\n  font-family: monospace;\n}\n.result .button {\n  display: none !important;\n}\n.game .practice-menu {\n  display: none;\n}\n.game.hinted .practice-menu {\n  display: block;\n}\n.game .practice-area {\n  height: 100%;\n  margin: 0;\n  padding: 0;\n}\n.game .practice-area .playground {\n  position: absolute;\n  top: 2rem;\n  left: 1rem;\n  bottom: 8rem;\n  right: 1rem;\n  width: auto;\n  height: auto;\n  padding: 0;\n}\n.game .practice-area .playground:before {\n  display: inline-block;\n  content: '';\n  width: 0;\n  height: 100%;\n  vertical-align: middle;\n}\n.game .practice-area .start {\n  white-space: nowrap;\n  z-index: 1;\n  bottom: -6rem !important;\n}\n.game .practice-area .start span {\n  padding: 0.6rem 2.4rem !important;\n}\n.game .practice-area .start span:before {\n  content: 'Start';\n}\n.game .practice-area .mode-game,\n.game .practice-area .word {\n  display: inline-block;\n  vertical-align: middle;\n}\n.game .practice-area .text {\n  top: auto;\n  bottom: 0;\n}\n.navigator {\n  position: relative;\n  width: 100%;\n  height: 3rem;\n  line-height: 3rem;\n  font-size: 2rem;\n  color: #fff;\n  background-color: #2badad;\n}\n.navigator > .back {\n  display: inline-block;\n  cursor: pointer;\n  width: 5rem;\n  height: 100%;\n  border-right: 0.2rem solid #259696;\n  text-align: center;\n}\n.navigator > .back:active {\n  background-color: #33d6d6;\n}\n.navigator > .back:before {\n  content: '<';\n}\n.navigator > .breadcrumb {\n  display: inline-block;\n  position: absolute;\n  top: 0;\n  left: 5.1rem;\n  right: 0;\n  bottom: 0;\n  padding: 0 1rem;\n  list-style: none;\n}\n.navigator > .breadcrumb > li {\n  display: inline-block;\n}\n.navigator > .breadcrumb > li:after {\n  content: '>';\n}\n.navigator > .breadcrumb > li:last-child {\n  pointer-events: none;\n}\n.navigator > .breadcrumb > li:last-child:after {\n  content: '';\n}\n.navigator > .breadcrumb > li > a {\n  margin: 0 1rem;\n  color: #fff;\n  text-decoration: none;\n}\n.navigator > .breadcrumb > li > a:hover {\n  text-decoration: underline;\n}\n.navigator.disabled {\n  pointer-events: none;\n  color: #259696;\n}\n.title-screen {\n  height: 100%;\n  -webkit-background-size: 80vw auto;\n  -moz-background-size: 80vw auto;\n  background-size: 80vw auto;\n  background-repeat: no-repeat;\n  background-position: 50% 20%;\n}\n.title-screen > .buttons {\n  position: absolute;\n  left: 0;\n  bottom: 10vh;\n  right: 0;\n  margin: auto;\n  width: 15rem;\n  height: 5.5rem;\n}\n.title-screen > .buttons > .button {\n  display: block;\n  width: 15rem;\n  height: 3rem;\n  line-height: 3rem;\n  margin-bottom: 1rem;\n  -webkit-border-radius: 1rem;\n  border-radius: 1rem;\n  color: #fff;\n  background-color: #2badad;\n  text-align: center;\n}\n.title-screen > .buttons > .button.disabled {\n  pointer-events: none;\n  background-color: #808080;\n}\n.title-screen > .buttons > .button:last-child {\n  margin-bottom: 0;\n}\n.title-screen > .buttons > .button.settings {\n  height: 3rem;\n  line-height: 3rem;\n}\n.title-screen > .buttons > .button > a {\n  display: block;\n  text-decoration: none;\n  color: #fff;\n}\n.title-screen > .buttons > .button > a:hover {\n  text-decoration: underline;\n}\n.levels-screen > .levels > .level {\n  position: relative;\n  padding-left: 16vw;\n  border-bottom: 0.5vh solid #e6e6e6;\n}\n.levels-screen > .levels > .level > .id,\n.levels-screen > .levels > .level > .challenges,\n.levels-screen > .levels > .level > .challenges > .challenge,\n.levels-screen > .levels > .level > .challenges > .challenge > a {\n  display: inline-block;\n}\n.levels-screen > .levels > .level > .id {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 16vw;\n  height: 16vw;\n  padding-top: 7vw;\n  font-size: 3vw;\n  font-weight: bold;\n  text-align: center;\n  color: #f6484b;\n}\n.levels-screen > .levels > .level > .challenges > .challenge > a {\n  -webkit-background-size: cover;\n  -moz-background-size: cover;\n  background-size: cover;\n  width: 16vw;\n  height: 16vw;\n  line-height: 16vw;\n}\n.settings-screen > form.settings {\n  position: absolute;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  margin: auto;\n  width: 80%;\n  height: 11rem;\n}\n.settings-screen > form.settings > input[type=\"radio\"] {\n  -webkit-appearance: none;\n  -moz-appearance: none;\n  appearance: none;\n  outline: none;\n  display: block;\n  width: 100%;\n  height: 5rem;\n  line-height: 5rem;\n  margin-left: 10%;\n  -webkit-border-radius: 1rem;\n  border-radius: 1rem;\n  color: #fff;\n  background-color: #808080;\n  margin: 0 0 1rem 0;\n}\n.settings-screen > form.settings > input[type=\"radio\"]:last-child {\n  margin: 0;\n}\n.settings-screen > form.settings > input[type=\"radio\"]:before {\n  display: inline-block;\n  width: 3rem;\n  text-align: center;\n  content: '';\n}\n.settings-screen > form.settings > input[type=\"radio\"]:checked:before {\n  content: '💡';\n}\n.settings-screen > form.settings > input[type=\"radio\"].standard:after {\n  content: 'Standard Mode';\n}\n.settings-screen > form.settings > input[type=\"radio\"].hint:after {\n  content: 'Hint Mode';\n}\n.game {\n  position: relative;\n  height: 100%;\n}\n.game > .view {\n  position: absolute;\n  background-color: #f2f2f2;\n  top: 3rem;\n  left: 0;\n  bottom: 0;\n  right: 0;\n}\n.game > .view:first-child {\n  top: 0;\n}\n", ""]);
+	exports.push([module.id, "html,\nbody,\ndiv,\nspan,\napplet,\nobject,\niframe,\nh1,\nh2,\nh3,\nh4,\nh5,\nh6,\np,\nblockquote,\npre,\na,\nabbr,\nacronym,\naddress,\nbig,\ncite,\ncode,\ndel,\ndfn,\nem,\nimg,\nins,\nkbd,\nq,\ns,\nsamp,\nsmall,\nstrike,\nstrong,\nsub,\nsup,\ntt,\nvar,\ndl,\ndt,\ndd,\nol,\nul,\nli,\nfieldset,\nform,\nlabel,\nlegend,\ntable,\ncaption,\ntbody,\ntfoot,\nthead,\ntr,\nth,\ntd {\n  margin: 0;\n  padding: 0;\n  border: 0;\n  outline: 0;\n  font-weight: inherit;\n  font-style: inherit;\n  font-family: inherit;\n  font-size: 100%;\n  vertical-align: baseline;\n}\nbody {\n  line-height: 1;\n  color: #000;\n  background: #fff;\n}\nol,\nul {\n  list-style: none;\n}\ntable {\n  border-collapse: separate;\n  border-spacing: 0;\n  vertical-align: middle;\n}\ncaption,\nth,\ntd {\n  text-align: left;\n  font-weight: normal;\n  vertical-align: middle;\n}\na img {\n  border: none;\n}\nhtml,\nbody,\n#app,\n.talks-screen {\n  height: 100%;\n}\nhtml > .cc-talks,\nbody > .cc-talks,\n#app > .cc-talks,\n.talks-screen > .cc-talks {\n  height: 100%;\n}\nhtml > .cc-talks > .mode-title,\nbody > .cc-talks > .mode-title,\n#app > .cc-talks > .mode-title,\n.talks-screen > .cc-talks > .mode-title,\nhtml > .cc-talks > .mode-game,\nbody > .cc-talks > .mode-game,\n#app > .cc-talks > .mode-game,\n.talks-screen > .cc-talks > .mode-game {\n  height: 100%;\n}\nbody {\n  font-family: monospace;\n}\n.result .button {\n  display: none !important;\n}\n.game .practice-menu {\n  display: none;\n}\n.game.hinted .practice-menu {\n  display: block;\n}\n.game .practice-area {\n  height: 100%;\n  margin: 0;\n  padding: 0;\n}\n.game .practice-area .playground {\n  position: absolute;\n  top: 2rem;\n  left: 1rem;\n  bottom: 8rem;\n  right: 1rem;\n  width: auto;\n  height: auto;\n  padding: 0;\n}\n.game .practice-area .playground:before {\n  display: inline-block;\n  content: '';\n  width: 0;\n  height: 100%;\n  vertical-align: middle;\n}\n.game .practice-area .start {\n  white-space: nowrap;\n  z-index: 1;\n  bottom: -6rem !important;\n}\n.game .practice-area .start span {\n  padding: 0.6rem 2.4rem !important;\n}\n.game .practice-area .start span:before {\n  content: 'Start';\n}\n.game .practice-area .mode-game,\n.game .practice-area .word {\n  display: inline-block;\n  vertical-align: middle;\n}\n.game .practice-area .text {\n  top: auto;\n  bottom: 0;\n}\n.navigator {\n  position: relative;\n  width: 100%;\n  height: 3rem;\n  line-height: 3rem;\n  font-size: 2rem;\n  color: #fff;\n  background-color: #2badad;\n}\n.navigator > .back {\n  display: inline-block;\n  cursor: pointer;\n  width: 5rem;\n  height: 100%;\n  border-right: 0.2rem solid #259696;\n  text-align: center;\n}\n.navigator > .back:active {\n  background-color: #33d6d6;\n}\n.navigator > .back:before {\n  content: '<';\n}\n.navigator > .breadcrumb {\n  display: inline-block;\n  position: absolute;\n  top: 0;\n  left: 5.1rem;\n  right: 0;\n  bottom: 0;\n  padding: 0 1rem;\n  list-style: none;\n}\n.navigator > .breadcrumb > li {\n  display: inline-block;\n}\n.navigator > .breadcrumb > li:after {\n  content: '>';\n}\n.navigator > .breadcrumb > li:last-child {\n  pointer-events: none;\n}\n.navigator > .breadcrumb > li:last-child:after {\n  content: '';\n}\n.navigator > .breadcrumb > li > a {\n  margin: 0 1rem;\n  color: #fff;\n  text-decoration: none;\n}\n.navigator > .breadcrumb > li > a:hover {\n  text-decoration: underline;\n}\n.navigator.disabled {\n  pointer-events: none;\n  color: #259696;\n}\n.title-screen {\n  height: 100%;\n  -webkit-background-size: 80vw auto;\n  -moz-background-size: 80vw auto;\n  background-size: 80vw auto;\n  background-repeat: no-repeat;\n  background-position: 50% 20%;\n}\n.title-screen > .buttons {\n  position: absolute;\n  left: 0;\n  bottom: 10vh;\n  right: 0;\n  margin: auto;\n  width: 15rem;\n  height: 5.5rem;\n}\n.title-screen > .buttons > .button {\n  display: block;\n  width: 15rem;\n  height: 3rem;\n  line-height: 3rem;\n  margin-bottom: 1rem;\n  -webkit-border-radius: 1rem;\n  border-radius: 1rem;\n  color: #fff;\n  background-color: #2badad;\n  text-align: center;\n}\n.title-screen > .buttons > .button.disabled {\n  pointer-events: none;\n  background-color: #808080;\n}\n.title-screen > .buttons > .button:last-child {\n  margin-bottom: 0;\n}\n.title-screen > .buttons > .button.settings {\n  height: 3rem;\n  line-height: 3rem;\n}\n.title-screen > .buttons > .button > a {\n  display: block;\n  text-decoration: none;\n  color: #fff;\n}\n.title-screen > .buttons > .button > a:hover {\n  text-decoration: underline;\n}\n.levels-screen > .levels > .level {\n  position: relative;\n  padding-left: 10rem;\n  border-bottom: 0.5vh solid #e6e6e6;\n}\n.levels-screen > .levels > .level > .id,\n.levels-screen > .levels > .level > .challenges,\n.levels-screen > .levels > .level > .challenges > .challenge,\n.levels-screen > .levels > .level > .challenges > .challenge > a {\n  display: inline-block;\n}\n.levels-screen > .levels > .level > .id {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 10rem;\n  height: 10rem;\n  padding-top: 4rem;\n  font-size: 2rem;\n  font-weight: bold;\n  text-align: center;\n  color: #f6484b;\n}\n.levels-screen > .levels > .level > .challenges > .challenge > a {\n  -webkit-background-size: cover;\n  -moz-background-size: cover;\n  background-size: cover;\n  width: 10rem;\n  height: 10rem;\n  line-height: 10rem;\n}\n.settings-screen > form.settings {\n  position: absolute;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  margin: auto;\n  width: 80%;\n  height: 11rem;\n}\n.settings-screen > form.settings > input[type=\"radio\"] {\n  -webkit-appearance: none;\n  -moz-appearance: none;\n  appearance: none;\n  outline: none;\n  display: block;\n  width: 100%;\n  height: 5rem;\n  line-height: 5rem;\n  margin-left: 10%;\n  -webkit-border-radius: 1rem;\n  border-radius: 1rem;\n  color: #fff;\n  background-color: #808080;\n  margin: 0 0 1rem 0;\n}\n.settings-screen > form.settings > input[type=\"radio\"]:last-child {\n  margin: 0;\n}\n.settings-screen > form.settings > input[type=\"radio\"]:before {\n  display: inline-block;\n  width: 3rem;\n  text-align: center;\n  content: '';\n}\n.settings-screen > form.settings > input[type=\"radio\"]:checked:before {\n  content: '💡';\n}\n.settings-screen > form.settings > input[type=\"radio\"].standard:after {\n  content: 'Standard Mode';\n}\n.settings-screen > form.settings > input[type=\"radio\"].hint:after {\n  content: 'Hint Mode';\n}\n.game {\n  position: relative;\n  height: 100%;\n}\n.game > .view {\n  position: absolute;\n  background-color: #f2f2f2;\n  top: 3rem;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  overflow-x: hidden;\n  overflow-y: scroll;\n}\n.game > .view:first-child {\n  top: 0;\n}\n", ""]);
 
 /***/ },
 /* 9 */
@@ -10234,8 +10234,8 @@
 	 */
 
 	var base64 = __webpack_require__(189)
-	var ieee754 = __webpack_require__(181)
-	var isArray = __webpack_require__(182)
+	var ieee754 = __webpack_require__(182)
+	var isArray = __webpack_require__(181)
 
 	exports.Buffer = Buffer
 	exports.SlowBuffer = Buffer
@@ -24139,15 +24139,15 @@
 
 	"use strict";
 
-	var ReactDOMIDOperations = __webpack_require__(158);
+	var ReactDOMIDOperations = __webpack_require__(155);
 	var ReactMarkupChecksum = __webpack_require__(121);
 	var ReactMount = __webpack_require__(41);
 	var ReactPerf = __webpack_require__(43);
-	var ReactReconcileTransaction = __webpack_require__(159);
+	var ReactReconcileTransaction = __webpack_require__(156);
 
 	var getReactRootElementInContainer = __webpack_require__(117);
 	var invariant = __webpack_require__(67);
-	var setInnerHTML = __webpack_require__(160);
+	var setInnerHTML = __webpack_require__(157);
 
 
 	var ELEMENT_NODE_TYPE = 1;
@@ -24350,7 +24350,7 @@
 
 	"use strict";
 
-	var AutoFocusMixin = __webpack_require__(155);
+	var AutoFocusMixin = __webpack_require__(158);
 	var ReactBrowserComponentMixin = __webpack_require__(87);
 	var ReactCompositeComponent = __webpack_require__(33);
 	var ReactDOM = __webpack_require__(37);
@@ -24426,7 +24426,7 @@
 	"use strict";
 
 	var EventConstants = __webpack_require__(66);
-	var LocalEventTrapMixin = __webpack_require__(156);
+	var LocalEventTrapMixin = __webpack_require__(159);
 	var ReactBrowserComponentMixin = __webpack_require__(87);
 	var ReactCompositeComponent = __webpack_require__(33);
 	var ReactDOM = __webpack_require__(37);
@@ -24486,7 +24486,7 @@
 	"use strict";
 
 	var EventConstants = __webpack_require__(66);
-	var LocalEventTrapMixin = __webpack_require__(156);
+	var LocalEventTrapMixin = __webpack_require__(159);
 	var ReactBrowserComponentMixin = __webpack_require__(87);
 	var ReactCompositeComponent = __webpack_require__(33);
 	var ReactDOM = __webpack_require__(37);
@@ -24543,9 +24543,9 @@
 
 	"use strict";
 
-	var AutoFocusMixin = __webpack_require__(155);
+	var AutoFocusMixin = __webpack_require__(158);
 	var DOMPropertyOperations = __webpack_require__(29);
-	var LinkedValueUtils = __webpack_require__(157);
+	var LinkedValueUtils = __webpack_require__(160);
 	var ReactBrowserComponentMixin = __webpack_require__(87);
 	var ReactCompositeComponent = __webpack_require__(33);
 	var ReactDOM = __webpack_require__(37);
@@ -24794,8 +24794,8 @@
 
 	"use strict";
 
-	var AutoFocusMixin = __webpack_require__(155);
-	var LinkedValueUtils = __webpack_require__(157);
+	var AutoFocusMixin = __webpack_require__(158);
+	var LinkedValueUtils = __webpack_require__(160);
 	var ReactBrowserComponentMixin = __webpack_require__(87);
 	var ReactCompositeComponent = __webpack_require__(33);
 	var ReactDOM = __webpack_require__(37);
@@ -24981,9 +24981,9 @@
 
 	"use strict";
 
-	var AutoFocusMixin = __webpack_require__(155);
+	var AutoFocusMixin = __webpack_require__(158);
 	var DOMPropertyOperations = __webpack_require__(29);
-	var LinkedValueUtils = __webpack_require__(157);
+	var LinkedValueUtils = __webpack_require__(160);
 	var ReactBrowserComponentMixin = __webpack_require__(87);
 	var ReactCompositeComponent = __webpack_require__(33);
 	var ReactDOM = __webpack_require__(37);
@@ -31224,269 +31224,6 @@
 /* 155 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * Copyright 2013-2014 Facebook, Inc.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 * http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 *
-	 * @providesModule AutoFocusMixin
-	 * @typechecks static-only
-	 */
-
-	"use strict";
-
-	var focusNode = __webpack_require__(196);
-
-	var AutoFocusMixin = {
-	  componentDidMount: function() {
-	    if (this.props.autoFocus) {
-	      focusNode(this.getDOMNode());
-	    }
-	  }
-	};
-
-	module.exports = AutoFocusMixin;
-
-
-/***/ },
-/* 156 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2014 Facebook, Inc.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 * http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 *
-	 * @providesModule LocalEventTrapMixin
-	 */
-
-	"use strict";
-
-	var ReactBrowserEventEmitter = __webpack_require__(88);
-
-	var accumulate = __webpack_require__(193);
-	var forEachAccumulated = __webpack_require__(194);
-	var invariant = __webpack_require__(67);
-
-	function remove(event) {
-	  event.remove();
-	}
-
-	var LocalEventTrapMixin = {
-	  trapBubbledEvent:function(topLevelType, handlerBaseName) {
-	    ("production" !== process.env.NODE_ENV ? invariant(this.isMounted(), 'Must be mounted to trap events') : invariant(this.isMounted()));
-	    var listener = ReactBrowserEventEmitter.trapBubbledEvent(
-	      topLevelType,
-	      handlerBaseName,
-	      this.getDOMNode()
-	    );
-	    this._localEventListeners = accumulate(this._localEventListeners, listener);
-	  },
-
-	  // trapCapturedEvent would look nearly identical. We don't implement that
-	  // method because it isn't currently needed.
-
-	  componentWillUnmount:function() {
-	    if (this._localEventListeners) {
-	      forEachAccumulated(this._localEventListeners, remove);
-	    }
-	  }
-	};
-
-	module.exports = LocalEventTrapMixin;
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50)))
-
-/***/ },
-/* 157 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {/**
-	 * Copyright 2013-2014 Facebook, Inc.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 * http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 *
-	 * @providesModule LinkedValueUtils
-	 * @typechecks static-only
-	 */
-
-	"use strict";
-
-	var ReactPropTypes = __webpack_require__(44);
-
-	var invariant = __webpack_require__(67);
-
-	var hasReadOnlyValue = {
-	  'button': true,
-	  'checkbox': true,
-	  'image': true,
-	  'hidden': true,
-	  'radio': true,
-	  'reset': true,
-	  'submit': true
-	};
-
-	function _assertSingleLink(input) {
-	  ("production" !== process.env.NODE_ENV ? invariant(
-	    input.props.checkedLink == null || input.props.valueLink == null,
-	    'Cannot provide a checkedLink and a valueLink. If you want to use ' +
-	    'checkedLink, you probably don\'t want to use valueLink and vice versa.'
-	  ) : invariant(input.props.checkedLink == null || input.props.valueLink == null));
-	}
-	function _assertValueLink(input) {
-	  _assertSingleLink(input);
-	  ("production" !== process.env.NODE_ENV ? invariant(
-	    input.props.value == null && input.props.onChange == null,
-	    'Cannot provide a valueLink and a value or onChange event. If you want ' +
-	    'to use value or onChange, you probably don\'t want to use valueLink.'
-	  ) : invariant(input.props.value == null && input.props.onChange == null));
-	}
-
-	function _assertCheckedLink(input) {
-	  _assertSingleLink(input);
-	  ("production" !== process.env.NODE_ENV ? invariant(
-	    input.props.checked == null && input.props.onChange == null,
-	    'Cannot provide a checkedLink and a checked property or onChange event. ' +
-	    'If you want to use checked or onChange, you probably don\'t want to ' +
-	    'use checkedLink'
-	  ) : invariant(input.props.checked == null && input.props.onChange == null));
-	}
-
-	/**
-	 * @param {SyntheticEvent} e change event to handle
-	 */
-	function _handleLinkedValueChange(e) {
-	  /*jshint validthis:true */
-	  this.props.valueLink.requestChange(e.target.value);
-	}
-
-	/**
-	  * @param {SyntheticEvent} e change event to handle
-	  */
-	function _handleLinkedCheckChange(e) {
-	  /*jshint validthis:true */
-	  this.props.checkedLink.requestChange(e.target.checked);
-	}
-
-	/**
-	 * Provide a linked `value` attribute for controlled forms. You should not use
-	 * this outside of the ReactDOM controlled form components.
-	 */
-	var LinkedValueUtils = {
-	  Mixin: {
-	    propTypes: {
-	      value: function(props, propName, componentName) {
-	        if (!props[propName] ||
-	            hasReadOnlyValue[props.type] ||
-	            props.onChange ||
-	            props.readOnly ||
-	            props.disabled) {
-	          return;
-	        }
-	        return new Error(
-	          'You provided a `value` prop to a form field without an ' +
-	          '`onChange` handler. This will render a read-only field. If ' +
-	          'the field should be mutable use `defaultValue`. Otherwise, ' +
-	          'set either `onChange` or `readOnly`.'
-	        );
-	      },
-	      checked: function(props, propName, componentName) {
-	        if (!props[propName] ||
-	            props.onChange ||
-	            props.readOnly ||
-	            props.disabled) {
-	          return;
-	        }
-	        return new Error(
-	          'You provided a `checked` prop to a form field without an ' +
-	          '`onChange` handler. This will render a read-only field. If ' +
-	          'the field should be mutable use `defaultChecked`. Otherwise, ' +
-	          'set either `onChange` or `readOnly`.'
-	        );
-	      },
-	      onChange: ReactPropTypes.func
-	    }
-	  },
-
-	  /**
-	   * @param {ReactComponent} input Form component
-	   * @return {*} current value of the input either from value prop or link.
-	   */
-	  getValue: function(input) {
-	    if (input.props.valueLink) {
-	      _assertValueLink(input);
-	      return input.props.valueLink.value;
-	    }
-	    return input.props.value;
-	  },
-
-	  /**
-	   * @param {ReactComponent} input Form component
-	   * @return {*} current checked status of the input either from checked prop
-	   *             or link.
-	   */
-	  getChecked: function(input) {
-	    if (input.props.checkedLink) {
-	      _assertCheckedLink(input);
-	      return input.props.checkedLink.value;
-	    }
-	    return input.props.checked;
-	  },
-
-	  /**
-	   * @param {ReactComponent} input Form component
-	   * @return {function} change callback either from onChange prop or link.
-	   */
-	  getOnChange: function(input) {
-	    if (input.props.valueLink) {
-	      _assertValueLink(input);
-	      return _handleLinkedValueChange;
-	    } else if (input.props.checkedLink) {
-	      _assertCheckedLink(input);
-	      return _handleLinkedCheckChange;
-	    }
-	    return input.props.onChange;
-	  }
-	};
-
-	module.exports = LinkedValueUtils;
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50)))
-
-/***/ },
-/* 158 */
-/***/ function(module, exports, __webpack_require__) {
-
 	/* WEBPACK VAR INJECTION */(function(process) {/**
 	 * Copyright 2013-2014 Facebook, Inc.
 	 *
@@ -31517,7 +31254,7 @@
 	var ReactPerf = __webpack_require__(43);
 
 	var invariant = __webpack_require__(67);
-	var setInnerHTML = __webpack_require__(160);
+	var setInnerHTML = __webpack_require__(157);
 
 	/**
 	 * Errors for properties that should not be updated with `updatePropertyById()`.
@@ -31680,7 +31417,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50)))
 
 /***/ },
-/* 159 */
+/* 156 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31868,7 +31605,7 @@
 
 
 /***/ },
-/* 160 */
+/* 157 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31957,6 +31694,269 @@
 
 	module.exports = setInnerHTML;
 
+
+/***/ },
+/* 158 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2014 Facebook, Inc.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 * http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 * @providesModule AutoFocusMixin
+	 * @typechecks static-only
+	 */
+
+	"use strict";
+
+	var focusNode = __webpack_require__(196);
+
+	var AutoFocusMixin = {
+	  componentDidMount: function() {
+	    if (this.props.autoFocus) {
+	      focusNode(this.getDOMNode());
+	    }
+	  }
+	};
+
+	module.exports = AutoFocusMixin;
+
+
+/***/ },
+/* 159 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2014 Facebook, Inc.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 * http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 * @providesModule LocalEventTrapMixin
+	 */
+
+	"use strict";
+
+	var ReactBrowserEventEmitter = __webpack_require__(88);
+
+	var accumulate = __webpack_require__(193);
+	var forEachAccumulated = __webpack_require__(194);
+	var invariant = __webpack_require__(67);
+
+	function remove(event) {
+	  event.remove();
+	}
+
+	var LocalEventTrapMixin = {
+	  trapBubbledEvent:function(topLevelType, handlerBaseName) {
+	    ("production" !== process.env.NODE_ENV ? invariant(this.isMounted(), 'Must be mounted to trap events') : invariant(this.isMounted()));
+	    var listener = ReactBrowserEventEmitter.trapBubbledEvent(
+	      topLevelType,
+	      handlerBaseName,
+	      this.getDOMNode()
+	    );
+	    this._localEventListeners = accumulate(this._localEventListeners, listener);
+	  },
+
+	  // trapCapturedEvent would look nearly identical. We don't implement that
+	  // method because it isn't currently needed.
+
+	  componentWillUnmount:function() {
+	    if (this._localEventListeners) {
+	      forEachAccumulated(this._localEventListeners, remove);
+	    }
+	  }
+	};
+
+	module.exports = LocalEventTrapMixin;
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50)))
+
+/***/ },
+/* 160 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {/**
+	 * Copyright 2013-2014 Facebook, Inc.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 * http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 * @providesModule LinkedValueUtils
+	 * @typechecks static-only
+	 */
+
+	"use strict";
+
+	var ReactPropTypes = __webpack_require__(44);
+
+	var invariant = __webpack_require__(67);
+
+	var hasReadOnlyValue = {
+	  'button': true,
+	  'checkbox': true,
+	  'image': true,
+	  'hidden': true,
+	  'radio': true,
+	  'reset': true,
+	  'submit': true
+	};
+
+	function _assertSingleLink(input) {
+	  ("production" !== process.env.NODE_ENV ? invariant(
+	    input.props.checkedLink == null || input.props.valueLink == null,
+	    'Cannot provide a checkedLink and a valueLink. If you want to use ' +
+	    'checkedLink, you probably don\'t want to use valueLink and vice versa.'
+	  ) : invariant(input.props.checkedLink == null || input.props.valueLink == null));
+	}
+	function _assertValueLink(input) {
+	  _assertSingleLink(input);
+	  ("production" !== process.env.NODE_ENV ? invariant(
+	    input.props.value == null && input.props.onChange == null,
+	    'Cannot provide a valueLink and a value or onChange event. If you want ' +
+	    'to use value or onChange, you probably don\'t want to use valueLink.'
+	  ) : invariant(input.props.value == null && input.props.onChange == null));
+	}
+
+	function _assertCheckedLink(input) {
+	  _assertSingleLink(input);
+	  ("production" !== process.env.NODE_ENV ? invariant(
+	    input.props.checked == null && input.props.onChange == null,
+	    'Cannot provide a checkedLink and a checked property or onChange event. ' +
+	    'If you want to use checked or onChange, you probably don\'t want to ' +
+	    'use checkedLink'
+	  ) : invariant(input.props.checked == null && input.props.onChange == null));
+	}
+
+	/**
+	 * @param {SyntheticEvent} e change event to handle
+	 */
+	function _handleLinkedValueChange(e) {
+	  /*jshint validthis:true */
+	  this.props.valueLink.requestChange(e.target.value);
+	}
+
+	/**
+	  * @param {SyntheticEvent} e change event to handle
+	  */
+	function _handleLinkedCheckChange(e) {
+	  /*jshint validthis:true */
+	  this.props.checkedLink.requestChange(e.target.checked);
+	}
+
+	/**
+	 * Provide a linked `value` attribute for controlled forms. You should not use
+	 * this outside of the ReactDOM controlled form components.
+	 */
+	var LinkedValueUtils = {
+	  Mixin: {
+	    propTypes: {
+	      value: function(props, propName, componentName) {
+	        if (!props[propName] ||
+	            hasReadOnlyValue[props.type] ||
+	            props.onChange ||
+	            props.readOnly ||
+	            props.disabled) {
+	          return;
+	        }
+	        return new Error(
+	          'You provided a `value` prop to a form field without an ' +
+	          '`onChange` handler. This will render a read-only field. If ' +
+	          'the field should be mutable use `defaultValue`. Otherwise, ' +
+	          'set either `onChange` or `readOnly`.'
+	        );
+	      },
+	      checked: function(props, propName, componentName) {
+	        if (!props[propName] ||
+	            props.onChange ||
+	            props.readOnly ||
+	            props.disabled) {
+	          return;
+	        }
+	        return new Error(
+	          'You provided a `checked` prop to a form field without an ' +
+	          '`onChange` handler. This will render a read-only field. If ' +
+	          'the field should be mutable use `defaultChecked`. Otherwise, ' +
+	          'set either `onChange` or `readOnly`.'
+	        );
+	      },
+	      onChange: ReactPropTypes.func
+	    }
+	  },
+
+	  /**
+	   * @param {ReactComponent} input Form component
+	   * @return {*} current value of the input either from value prop or link.
+	   */
+	  getValue: function(input) {
+	    if (input.props.valueLink) {
+	      _assertValueLink(input);
+	      return input.props.valueLink.value;
+	    }
+	    return input.props.value;
+	  },
+
+	  /**
+	   * @param {ReactComponent} input Form component
+	   * @return {*} current checked status of the input either from checked prop
+	   *             or link.
+	   */
+	  getChecked: function(input) {
+	    if (input.props.checkedLink) {
+	      _assertCheckedLink(input);
+	      return input.props.checkedLink.value;
+	    }
+	    return input.props.checked;
+	  },
+
+	  /**
+	   * @param {ReactComponent} input Form component
+	   * @return {function} change callback either from onChange prop or link.
+	   */
+	  getOnChange: function(input) {
+	    if (input.props.valueLink) {
+	      _assertValueLink(input);
+	      return _handleLinkedValueChange;
+	    } else if (input.props.checkedLink) {
+	      _assertCheckedLink(input);
+	      return _handleLinkedCheckChange;
+	    }
+	    return input.props.onChange;
+	  }
+	};
+
+	module.exports = LinkedValueUtils;
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50)))
 
 /***/ },
 /* 161 */
@@ -42643,6 +42643,45 @@
 /* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
+	
+	/**
+	 * isArray
+	 */
+
+	var isArray = Array.isArray;
+
+	/**
+	 * toString
+	 */
+
+	var str = Object.prototype.toString;
+
+	/**
+	 * Whether or not the given `val`
+	 * is an array.
+	 *
+	 * example:
+	 *
+	 *        isArray([]);
+	 *        // > true
+	 *        isArray(arguments);
+	 *        // > false
+	 *        isArray('');
+	 *        // > false
+	 *
+	 * @param {mixed} val
+	 * @return {bool}
+	 */
+
+	module.exports = isArray || function (val) {
+	  return !! val && '[object Array]' == str.call(val);
+	};
+
+
+/***/ },
+/* 182 */
+/***/ function(module, exports, __webpack_require__) {
+
 	exports.read = function(buffer, offset, isLE, mLen, nBytes) {
 	  var e, m,
 	      eLen = nBytes * 8 - mLen - 1,
@@ -42730,45 +42769,6 @@
 
 
 /***/ },
-/* 182 */
-/***/ function(module, exports, __webpack_require__) {
-
-	
-	/**
-	 * isArray
-	 */
-
-	var isArray = Array.isArray;
-
-	/**
-	 * toString
-	 */
-
-	var str = Object.prototype.toString;
-
-	/**
-	 * Whether or not the given `val`
-	 * is an array.
-	 *
-	 * example:
-	 *
-	 *        isArray([]);
-	 *        // > true
-	 *        isArray(arguments);
-	 *        // > false
-	 *        isArray('');
-	 *        // > false
-	 *
-	 * @param {mixed} val
-	 * @return {bool}
-	 */
-
-	module.exports = isArray || function (val) {
-	  return !! val && '[object Array]' == str.call(val);
-	};
-
-
-/***/ },
 /* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -42801,11 +42801,11 @@
 /* 184 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(204);
+	exports = module.exports = __webpack_require__(203);
 	exports.Stream = __webpack_require__(53);
 	exports.Readable = exports;
 	exports.Writable = __webpack_require__(202);
-	exports.Duplex = __webpack_require__(203);
+	exports.Duplex = __webpack_require__(204);
 	exports.Transform = __webpack_require__(205);
 	exports.PassThrough = __webpack_require__(206);
 
@@ -42821,7 +42821,7 @@
 /* 186 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(203)
+	module.exports = __webpack_require__(204)
 
 
 /***/ },
@@ -44128,7 +44128,7 @@
 	}
 
 	function WritableState(options, stream) {
-	  var Duplex = __webpack_require__(203);
+	  var Duplex = __webpack_require__(204);
 
 	  options = options || {};
 
@@ -44216,7 +44216,7 @@
 	}
 
 	function Writable(options) {
-	  var Duplex = __webpack_require__(203);
+	  var Duplex = __webpack_require__(204);
 
 	  // Writable ctor is applied to Duplexes, though they're not
 	  // instanceof Writable, they're instanceof Readable.
@@ -44583,102 +44583,6 @@
 	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
 	// USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-	// a duplex stream is just a stream that is both readable and writable.
-	// Since JS doesn't have multiple prototypal inheritance, this class
-	// prototypally inherits from Readable, and then parasitically from
-	// Writable.
-
-	module.exports = Duplex;
-
-	/*<replacement>*/
-	var objectKeys = Object.keys || function (obj) {
-	  var keys = [];
-	  for (var key in obj) keys.push(key);
-	  return keys;
-	}
-	/*</replacement>*/
-
-
-	/*<replacement>*/
-	var util = __webpack_require__(220);
-	util.inherits = __webpack_require__(219);
-	/*</replacement>*/
-
-	var Readable = __webpack_require__(204);
-	var Writable = __webpack_require__(202);
-
-	util.inherits(Duplex, Readable);
-
-	forEach(objectKeys(Writable.prototype), function(method) {
-	  if (!Duplex.prototype[method])
-	    Duplex.prototype[method] = Writable.prototype[method];
-	});
-
-	function Duplex(options) {
-	  if (!(this instanceof Duplex))
-	    return new Duplex(options);
-
-	  Readable.call(this, options);
-	  Writable.call(this, options);
-
-	  if (options && options.readable === false)
-	    this.readable = false;
-
-	  if (options && options.writable === false)
-	    this.writable = false;
-
-	  this.allowHalfOpen = true;
-	  if (options && options.allowHalfOpen === false)
-	    this.allowHalfOpen = false;
-
-	  this.once('end', onend);
-	}
-
-	// the no-half-open enforcer
-	function onend() {
-	  // if we allow half-open state, or if the writable side ended,
-	  // then we're ok.
-	  if (this.allowHalfOpen || this._writableState.ended)
-	    return;
-
-	  // no more data can be written.
-	  // But allow more writes to happen in this tick.
-	  process.nextTick(this.end.bind(this));
-	}
-
-	function forEach (xs, f) {
-	  for (var i = 0, l = xs.length; i < l; i++) {
-	    f(xs[i], i);
-	  }
-	}
-	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50)))
-
-/***/ },
-/* 204 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
-	//
-	// Permission is hereby granted, free of charge, to any person obtaining a
-	// copy of this software and associated documentation files (the
-	// "Software"), to deal in the Software without restriction, including
-	// without limitation the rights to use, copy, modify, merge, publish,
-	// distribute, sublicense, and/or sell copies of the Software, and to permit
-	// persons to whom the Software is furnished to do so, subject to the
-	// following conditions:
-	//
-	// The above copyright notice and this permission notice shall be included
-	// in all copies or substantial portions of the Software.
-	//
-	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-	// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
 	module.exports = Readable;
 
 	/*<replacement>*/
@@ -44723,7 +44627,7 @@
 	util.inherits(Readable, Stream);
 
 	function ReadableState(options, stream) {
-	  var Duplex = __webpack_require__(203);
+	  var Duplex = __webpack_require__(204);
 
 	  options = options || {};
 
@@ -44791,7 +44695,7 @@
 	}
 
 	function Readable(options) {
-	  var Duplex = __webpack_require__(203);
+	  var Duplex = __webpack_require__(204);
 
 	  if (!(this instanceof Readable))
 	    return new Readable(options);
@@ -45613,6 +45517,102 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50)))
 
 /***/ },
+/* 204 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(process) {// Copyright Joyent, Inc. and other Node contributors.
+	//
+	// Permission is hereby granted, free of charge, to any person obtaining a
+	// copy of this software and associated documentation files (the
+	// "Software"), to deal in the Software without restriction, including
+	// without limitation the rights to use, copy, modify, merge, publish,
+	// distribute, sublicense, and/or sell copies of the Software, and to permit
+	// persons to whom the Software is furnished to do so, subject to the
+	// following conditions:
+	//
+	// The above copyright notice and this permission notice shall be included
+	// in all copies or substantial portions of the Software.
+	//
+	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+	// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+	// a duplex stream is just a stream that is both readable and writable.
+	// Since JS doesn't have multiple prototypal inheritance, this class
+	// prototypally inherits from Readable, and then parasitically from
+	// Writable.
+
+	module.exports = Duplex;
+
+	/*<replacement>*/
+	var objectKeys = Object.keys || function (obj) {
+	  var keys = [];
+	  for (var key in obj) keys.push(key);
+	  return keys;
+	}
+	/*</replacement>*/
+
+
+	/*<replacement>*/
+	var util = __webpack_require__(220);
+	util.inherits = __webpack_require__(219);
+	/*</replacement>*/
+
+	var Readable = __webpack_require__(203);
+	var Writable = __webpack_require__(202);
+
+	util.inherits(Duplex, Readable);
+
+	forEach(objectKeys(Writable.prototype), function(method) {
+	  if (!Duplex.prototype[method])
+	    Duplex.prototype[method] = Writable.prototype[method];
+	});
+
+	function Duplex(options) {
+	  if (!(this instanceof Duplex))
+	    return new Duplex(options);
+
+	  Readable.call(this, options);
+	  Writable.call(this, options);
+
+	  if (options && options.readable === false)
+	    this.readable = false;
+
+	  if (options && options.writable === false)
+	    this.writable = false;
+
+	  this.allowHalfOpen = true;
+	  if (options && options.allowHalfOpen === false)
+	    this.allowHalfOpen = false;
+
+	  this.once('end', onend);
+	}
+
+	// the no-half-open enforcer
+	function onend() {
+	  // if we allow half-open state, or if the writable side ended,
+	  // then we're ok.
+	  if (this.allowHalfOpen || this._writableState.ended)
+	    return;
+
+	  // no more data can be written.
+	  // But allow more writes to happen in this tick.
+	  process.nextTick(this.end.bind(this));
+	}
+
+	function forEach (xs, f) {
+	  for (var i = 0, l = xs.length; i < l; i++) {
+	    f(xs[i], i);
+	  }
+	}
+	
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50)))
+
+/***/ },
 /* 205 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -45682,7 +45682,7 @@
 
 	module.exports = Transform;
 
-	var Duplex = __webpack_require__(203);
+	var Duplex = __webpack_require__(204);
 
 	/*<replacement>*/
 	var util = __webpack_require__(220);
