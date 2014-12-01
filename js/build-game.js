@@ -58,8 +58,8 @@
 
 	(function(){
 	  var fs, request, Promise, React, Navigator, TitleScreen, LevelsScreen, TalksScreen, SettingsScreen, div, uriLevel, getLevel, Game;
-	  fs = __webpack_require__(8);
-	  request = __webpack_require__(9);
+	  fs = __webpack_require__(9);
+	  request = __webpack_require__(8);
 	  Promise = __webpack_require__(11).Promise;
 	  React = __webpack_require__(7);
 	  Navigator = __webpack_require__(2);
@@ -578,12 +578,492 @@
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(global) {var process = global.process || __webpack_require__(44);
+	// Browser Request
+	//
+	// Licensed under the Apache License, Version 2.0 (the "License");
+	// you may not use this file except in compliance with the License.
+	// You may obtain a copy of the License at
+	//
+	//     http://www.apache.org/licenses/LICENSE-2.0
+	//
+	// Unless required by applicable law or agreed to in writing, software
+	// distributed under the License is distributed on an "AS IS" BASIS,
+	// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	// See the License for the specific language governing permissions and
+	// limitations under the License.
+
+	var XHR = XMLHttpRequest
+	if (!XHR) throw new Error('missing XMLHttpRequest')
+	request.log = {
+	  'trace': noop, 'debug': noop, 'info': noop, 'warn': noop, 'error': noop
+	}
+
+	var DEFAULT_TIMEOUT = 3 * 60 * 1000 // 3 minutes
+
+	//
+	// request
+	//
+
+	function request(options, callback) {
+	  // The entry-point to the API: prep the options object and pass the real work to run_xhr.
+	  if(typeof callback !== 'function')
+	    throw new Error('Bad callback given: ' + callback)
+
+	  if(!options)
+	    throw new Error('No options given')
+
+	  var options_onResponse = options.onResponse; // Save this for later.
+
+	  if(typeof options === 'string')
+	    options = {'uri':options};
+	  else
+	    options = JSON.parse(JSON.stringify(options)); // Use a duplicate for mutating.
+
+	  options.onResponse = options_onResponse // And put it back.
+
+	  if (options.verbose) request.log = getLogger();
+
+	  if(options.url) {
+	    options.uri = options.url;
+	    delete options.url;
+	  }
+
+	  if(!options.uri && options.uri !== "")
+	    throw new Error("options.uri is a required argument");
+
+	  if(typeof options.uri != "string")
+	    throw new Error("options.uri must be a string");
+
+	  var unsupported_options = ['proxy', '_redirectsFollowed', 'maxRedirects', 'followRedirect']
+	  for (var i = 0; i < unsupported_options.length; i++)
+	    if(options[ unsupported_options[i] ])
+	      throw new Error("options." + unsupported_options[i] + " is not supported")
+
+	  options.callback = callback
+	  options.method = options.method || 'GET';
+	  options.headers = options.headers || {};
+	  options.body    = options.body || null
+	  options.timeout = options.timeout || request.DEFAULT_TIMEOUT
+
+	  if(options.headers.host)
+	    throw new Error("Options.headers.host is not supported");
+
+	  if(options.json) {
+	    options.headers.accept = options.headers.accept || 'application/json'
+	    if(options.method !== 'GET')
+	      options.headers['content-type'] = 'application/json'
+
+	    if(typeof options.json !== 'boolean')
+	      options.body = JSON.stringify(options.json)
+	    else if(typeof options.body !== 'string')
+	      options.body = JSON.stringify(options.body)
+	  }
+	  
+	  //BEGIN QS Hack
+	  var serialize = function(obj) {
+	    var str = [];
+	    for(var p in obj)
+	      if (obj.hasOwnProperty(p)) {
+	        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
+	      }
+	    return str.join("&");
+	  }
+	  
+	  if(options.qs){
+	    var qs = (typeof options.qs == 'string')? options.qs : serialize(options.qs);
+	    if(options.uri.indexOf('?') !== -1){ //no get params
+	        options.uri = options.uri+'&'+qs;
+	    }else{ //existing get params
+	        options.uri = options.uri+'?'+qs;
+	    }
+	  }
+	  //END QS Hack
+	  
+	  //BEGIN FORM Hack
+	  var multipart = function(obj) {
+	    //todo: support file type (useful?)
+	    var result = {};
+	    result.boundry = '-------------------------------'+Math.floor(Math.random()*1000000000);
+	    var lines = [];
+	    for(var p in obj){
+	        if (obj.hasOwnProperty(p)) {
+	            lines.push(
+	                '--'+result.boundry+"\n"+
+	                'Content-Disposition: form-data; name="'+p+'"'+"\n"+
+	                "\n"+
+	                obj[p]+"\n"
+	            );
+	        }
+	    }
+	    lines.push( '--'+result.boundry+'--' );
+	    result.body = lines.join('');
+	    result.length = result.body.length;
+	    result.type = 'multipart/form-data; boundary='+result.boundry;
+	    return result;
+	  }
+	  
+	  if(options.form){
+	    if(typeof options.form == 'string') throw('form name unsupported');
+	    if(options.method === 'POST'){
+	        var encoding = (options.encoding || 'application/x-www-form-urlencoded').toLowerCase();
+	        options.headers['content-type'] = encoding;
+	        switch(encoding){
+	            case 'application/x-www-form-urlencoded':
+	                options.body = serialize(options.form).replace(/%20/g, "+");
+	                break;
+	            case 'multipart/form-data':
+	                var multi = multipart(options.form);
+	                //options.headers['content-length'] = multi.length;
+	                options.body = multi.body;
+	                options.headers['content-type'] = multi.type;
+	                break;
+	            default : throw new Error('unsupported encoding:'+encoding);
+	        }
+	    }
+	  }
+	  //END FORM Hack
+
+	  // If onResponse is boolean true, call back immediately when the response is known,
+	  // not when the full request is complete.
+	  options.onResponse = options.onResponse || noop
+	  if(options.onResponse === true) {
+	    options.onResponse = callback
+	    options.callback = noop
+	  }
+
+	  // XXX Browsers do not like this.
+	  //if(options.body)
+	  //  options.headers['content-length'] = options.body.length;
+
+	  // HTTP basic authentication
+	  if(!options.headers.authorization && options.auth)
+	    options.headers.authorization = 'Basic ' + b64_enc(options.auth.username + ':' + options.auth.password);
+
+	  return run_xhr(options)
+	}
+
+	var req_seq = 0
+	function run_xhr(options) {
+	  var xhr = new XHR
+	    , timed_out = false
+	    , is_cors = is_crossDomain(options.uri)
+	    , supports_cors = ('withCredentials' in xhr)
+
+	  req_seq += 1
+	  xhr.seq_id = req_seq
+	  xhr.id = req_seq + ': ' + options.method + ' ' + options.uri
+	  xhr._id = xhr.id // I know I will type "_id" from habit all the time.
+
+	  if(is_cors && !supports_cors) {
+	    var cors_err = new Error('Browser does not support cross-origin request: ' + options.uri)
+	    cors_err.cors = 'unsupported'
+	    return options.callback(cors_err, xhr)
+	  }
+
+	  xhr.timeoutTimer = setTimeout(too_late, options.timeout)
+	  function too_late() {
+	    timed_out = true
+	    var er = new Error('ETIMEDOUT')
+	    er.code = 'ETIMEDOUT'
+	    er.duration = options.timeout
+
+	    request.log.error('Timeout', { 'id':xhr._id, 'milliseconds':options.timeout })
+	    return options.callback(er, xhr)
+	  }
+
+	  // Some states can be skipped over, so remember what is still incomplete.
+	  var did = {'response':false, 'loading':false, 'end':false}
+
+	  xhr.onreadystatechange = on_state_change
+	  xhr.open(options.method, options.uri, true) // asynchronous
+	  if(is_cors)
+	    xhr.withCredentials = !! options.withCredentials
+	  xhr.send(options.body)
+	  return xhr
+
+	  function on_state_change(event) {
+	    if(timed_out)
+	      return request.log.debug('Ignoring timed out state change', {'state':xhr.readyState, 'id':xhr.id})
+
+	    request.log.debug('State change', {'state':xhr.readyState, 'id':xhr.id, 'timed_out':timed_out})
+
+	    if(xhr.readyState === XHR.OPENED) {
+	      request.log.debug('Request started', {'id':xhr.id})
+	      for (var key in options.headers)
+	        xhr.setRequestHeader(key, options.headers[key])
+	    }
+
+	    else if(xhr.readyState === XHR.HEADERS_RECEIVED)
+	      on_response()
+
+	    else if(xhr.readyState === XHR.LOADING) {
+	      on_response()
+	      on_loading()
+	    }
+
+	    else if(xhr.readyState === XHR.DONE) {
+	      on_response()
+	      on_loading()
+	      on_end()
+	    }
+	  }
+
+	  function on_response() {
+	    if(did.response)
+	      return
+
+	    did.response = true
+	    request.log.debug('Got response', {'id':xhr.id, 'status':xhr.status})
+	    clearTimeout(xhr.timeoutTimer)
+	    xhr.statusCode = xhr.status // Node request compatibility
+
+	    // Detect failed CORS requests.
+	    if(is_cors && xhr.statusCode == 0) {
+	      var cors_err = new Error('CORS request rejected: ' + options.uri)
+	      cors_err.cors = 'rejected'
+
+	      // Do not process this request further.
+	      did.loading = true
+	      did.end = true
+
+	      return options.callback(cors_err, xhr)
+	    }
+
+	    options.onResponse(null, xhr)
+	  }
+
+	  function on_loading() {
+	    if(did.loading)
+	      return
+
+	    did.loading = true
+	    request.log.debug('Response body loading', {'id':xhr.id})
+	    // TODO: Maybe simulate "data" events by watching xhr.responseText
+	  }
+
+	  function on_end() {
+	    if(did.end)
+	      return
+
+	    did.end = true
+	    request.log.debug('Request done', {'id':xhr.id})
+
+	    xhr.body = xhr.responseText
+	    if(options.json) {
+	      try        { xhr.body = JSON.parse(xhr.responseText) }
+	      catch (er) { return options.callback(er, xhr)        }
+	    }
+
+	    options.callback(null, xhr, xhr.body)
+	  }
+
+	} // request
+
+	request.withCredentials = false;
+	request.DEFAULT_TIMEOUT = DEFAULT_TIMEOUT;
+
+	//
+	// defaults
+	//
+
+	request.defaults = function(options, requester) {
+	  var def = function (method) {
+	    var d = function (params, callback) {
+	      if(typeof params === 'string')
+	        params = {'uri': params};
+	      else {
+	        params = JSON.parse(JSON.stringify(params));
+	      }
+	      for (var i in options) {
+	        if (params[i] === undefined) params[i] = options[i]
+	      }
+	      return method(params, callback)
+	    }
+	    return d
+	  }
+	  var de = def(request)
+	  de.get = def(request.get)
+	  de.post = def(request.post)
+	  de.put = def(request.put)
+	  de.head = def(request.head)
+	  return de
+	}
+
+	//
+	// HTTP method shortcuts
+	//
+
+	var shortcuts = [ 'get', 'put', 'post', 'head' ];
+	shortcuts.forEach(function(shortcut) {
+	  var method = shortcut.toUpperCase();
+	  var func   = shortcut.toLowerCase();
+
+	  request[func] = function(opts) {
+	    if(typeof opts === 'string')
+	      opts = {'method':method, 'uri':opts};
+	    else {
+	      opts = JSON.parse(JSON.stringify(opts));
+	      opts.method = method;
+	    }
+
+	    var args = [opts].concat(Array.prototype.slice.apply(arguments, [1]));
+	    return request.apply(this, args);
+	  }
+	})
+
+	//
+	// CouchDB shortcut
+	//
+
+	request.couch = function(options, callback) {
+	  if(typeof options === 'string')
+	    options = {'uri':options}
+
+	  // Just use the request API to do JSON.
+	  options.json = true
+	  if(options.body)
+	    options.json = options.body
+	  delete options.body
+
+	  callback = callback || noop
+
+	  var xhr = request(options, couch_handler)
+	  return xhr
+
+	  function couch_handler(er, resp, body) {
+	    if(er)
+	      return callback(er, resp, body)
+
+	    if((resp.statusCode < 200 || resp.statusCode > 299) && body.error) {
+	      // The body is a Couch JSON object indicating the error.
+	      er = new Error('CouchDB error: ' + (body.error.reason || body.error.error))
+	      for (var key in body)
+	        er[key] = body[key]
+	      return callback(er, resp, body);
+	    }
+
+	    return callback(er, resp, body);
+	  }
+	}
+
+	//
+	// Utility
+	//
+
+	function noop() {}
+
+	function getLogger() {
+	  var logger = {}
+	    , levels = ['trace', 'debug', 'info', 'warn', 'error']
+	    , level, i
+
+	  for(i = 0; i < levels.length; i++) {
+	    level = levels[i]
+
+	    logger[level] = noop
+	    if(typeof console !== 'undefined' && console && console[level])
+	      logger[level] = formatted(console, level)
+	  }
+
+	  return logger
+	}
+
+	function formatted(obj, method) {
+	  return formatted_logger
+
+	  function formatted_logger(str, context) {
+	    if(typeof context === 'object')
+	      str += ' ' + JSON.stringify(context)
+
+	    return obj[method].call(obj, str)
+	  }
+	}
+
+	// Return whether a URL is a cross-domain request.
+	function is_crossDomain(url) {
+	  var rurl = /^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/
+
+	  // jQuery #8138, IE may throw an exception when accessing
+	  // a field from window.location if document.domain has been set
+	  var ajaxLocation
+	  try { ajaxLocation = location.href }
+	  catch (e) {
+	    // Use the href attribute of an A element since IE will modify it given document.location
+	    ajaxLocation = document.createElement( "a" );
+	    ajaxLocation.href = "";
+	    ajaxLocation = ajaxLocation.href;
+	  }
+
+	  var ajaxLocParts = rurl.exec(ajaxLocation.toLowerCase()) || []
+	    , parts = rurl.exec(url.toLowerCase() )
+
+	  var result = !!(
+	    parts &&
+	    (  parts[1] != ajaxLocParts[1]
+	    || parts[2] != ajaxLocParts[2]
+	    || (parts[3] || (parts[1] === "http:" ? 80 : 443)) != (ajaxLocParts[3] || (ajaxLocParts[1] === "http:" ? 80 : 443))
+	    )
+	  )
+
+	  //console.debug('is_crossDomain('+url+') -> ' + result)
+	  return result
+	}
+
+	// MIT License from http://phpjs.org/functions/base64_encode:358
+	function b64_enc (data) {
+	    // Encodes string using MIME base64 algorithm
+	    var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+	    var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, enc="", tmp_arr = [];
+
+	    if (!data) {
+	        return data;
+	    }
+
+	    // assume utf8 data
+	    // data = this.utf8_encode(data+'');
+
+	    do { // pack three octets into four hexets
+	        o1 = data.charCodeAt(i++);
+	        o2 = data.charCodeAt(i++);
+	        o3 = data.charCodeAt(i++);
+
+	        bits = o1<<16 | o2<<8 | o3;
+
+	        h1 = bits>>18 & 0x3f;
+	        h2 = bits>>12 & 0x3f;
+	        h3 = bits>>6 & 0x3f;
+	        h4 = bits & 0x3f;
+
+	        // use hexets to index into b64, and append result to encoded string
+	        tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
+	    } while (i < data.length);
+
+	    enc = tmp_arr.join('');
+
+	    switch (data.length % 3) {
+	        case 1:
+	            enc = enc.slice(0, -2) + '==';
+	        break;
+	        case 2:
+	            enc = enc.slice(0, -1) + '=';
+	        break;
+	    }
+
+	    return enc;
+	}
+	module.exports = request;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/* WEBPACK VAR INJECTION */(function(global) {var process = global.process || __webpack_require__(47);
 	var Buffer = global.Buffer || __webpack_require__(39).Buffer;
 	var pathutil = __webpack_require__(40);
 	var constants = __webpack_require__(114);
 	var Stats = __webpack_require__(42);
-	var inherits = __webpack_require__(43);
+	var inherits = __webpack_require__(48);
 	var mountpoint = process.env.FS_MOUNT_POINT || 'file';
 
 	var fs = module.exports = {
@@ -1157,499 +1637,19 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }())))
 
 /***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Browser Request
-	//
-	// Licensed under the Apache License, Version 2.0 (the "License");
-	// you may not use this file except in compliance with the License.
-	// You may obtain a copy of the License at
-	//
-	//     http://www.apache.org/licenses/LICENSE-2.0
-	//
-	// Unless required by applicable law or agreed to in writing, software
-	// distributed under the License is distributed on an "AS IS" BASIS,
-	// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	// See the License for the specific language governing permissions and
-	// limitations under the License.
-
-	var XHR = XMLHttpRequest
-	if (!XHR) throw new Error('missing XMLHttpRequest')
-	request.log = {
-	  'trace': noop, 'debug': noop, 'info': noop, 'warn': noop, 'error': noop
-	}
-
-	var DEFAULT_TIMEOUT = 3 * 60 * 1000 // 3 minutes
-
-	//
-	// request
-	//
-
-	function request(options, callback) {
-	  // The entry-point to the API: prep the options object and pass the real work to run_xhr.
-	  if(typeof callback !== 'function')
-	    throw new Error('Bad callback given: ' + callback)
-
-	  if(!options)
-	    throw new Error('No options given')
-
-	  var options_onResponse = options.onResponse; // Save this for later.
-
-	  if(typeof options === 'string')
-	    options = {'uri':options};
-	  else
-	    options = JSON.parse(JSON.stringify(options)); // Use a duplicate for mutating.
-
-	  options.onResponse = options_onResponse // And put it back.
-
-	  if (options.verbose) request.log = getLogger();
-
-	  if(options.url) {
-	    options.uri = options.url;
-	    delete options.url;
-	  }
-
-	  if(!options.uri && options.uri !== "")
-	    throw new Error("options.uri is a required argument");
-
-	  if(typeof options.uri != "string")
-	    throw new Error("options.uri must be a string");
-
-	  var unsupported_options = ['proxy', '_redirectsFollowed', 'maxRedirects', 'followRedirect']
-	  for (var i = 0; i < unsupported_options.length; i++)
-	    if(options[ unsupported_options[i] ])
-	      throw new Error("options." + unsupported_options[i] + " is not supported")
-
-	  options.callback = callback
-	  options.method = options.method || 'GET';
-	  options.headers = options.headers || {};
-	  options.body    = options.body || null
-	  options.timeout = options.timeout || request.DEFAULT_TIMEOUT
-
-	  if(options.headers.host)
-	    throw new Error("Options.headers.host is not supported");
-
-	  if(options.json) {
-	    options.headers.accept = options.headers.accept || 'application/json'
-	    if(options.method !== 'GET')
-	      options.headers['content-type'] = 'application/json'
-
-	    if(typeof options.json !== 'boolean')
-	      options.body = JSON.stringify(options.json)
-	    else if(typeof options.body !== 'string')
-	      options.body = JSON.stringify(options.body)
-	  }
-	  
-	  //BEGIN QS Hack
-	  var serialize = function(obj) {
-	    var str = [];
-	    for(var p in obj)
-	      if (obj.hasOwnProperty(p)) {
-	        str.push(encodeURIComponent(p) + "=" + encodeURIComponent(obj[p]));
-	      }
-	    return str.join("&");
-	  }
-	  
-	  if(options.qs){
-	    var qs = (typeof options.qs == 'string')? options.qs : serialize(options.qs);
-	    if(options.uri.indexOf('?') !== -1){ //no get params
-	        options.uri = options.uri+'&'+qs;
-	    }else{ //existing get params
-	        options.uri = options.uri+'?'+qs;
-	    }
-	  }
-	  //END QS Hack
-	  
-	  //BEGIN FORM Hack
-	  var multipart = function(obj) {
-	    //todo: support file type (useful?)
-	    var result = {};
-	    result.boundry = '-------------------------------'+Math.floor(Math.random()*1000000000);
-	    var lines = [];
-	    for(var p in obj){
-	        if (obj.hasOwnProperty(p)) {
-	            lines.push(
-	                '--'+result.boundry+"\n"+
-	                'Content-Disposition: form-data; name="'+p+'"'+"\n"+
-	                "\n"+
-	                obj[p]+"\n"
-	            );
-	        }
-	    }
-	    lines.push( '--'+result.boundry+'--' );
-	    result.body = lines.join('');
-	    result.length = result.body.length;
-	    result.type = 'multipart/form-data; boundary='+result.boundry;
-	    return result;
-	  }
-	  
-	  if(options.form){
-	    if(typeof options.form == 'string') throw('form name unsupported');
-	    if(options.method === 'POST'){
-	        var encoding = (options.encoding || 'application/x-www-form-urlencoded').toLowerCase();
-	        options.headers['content-type'] = encoding;
-	        switch(encoding){
-	            case 'application/x-www-form-urlencoded':
-	                options.body = serialize(options.form).replace(/%20/g, "+");
-	                break;
-	            case 'multipart/form-data':
-	                var multi = multipart(options.form);
-	                //options.headers['content-length'] = multi.length;
-	                options.body = multi.body;
-	                options.headers['content-type'] = multi.type;
-	                break;
-	            default : throw new Error('unsupported encoding:'+encoding);
-	        }
-	    }
-	  }
-	  //END FORM Hack
-
-	  // If onResponse is boolean true, call back immediately when the response is known,
-	  // not when the full request is complete.
-	  options.onResponse = options.onResponse || noop
-	  if(options.onResponse === true) {
-	    options.onResponse = callback
-	    options.callback = noop
-	  }
-
-	  // XXX Browsers do not like this.
-	  //if(options.body)
-	  //  options.headers['content-length'] = options.body.length;
-
-	  // HTTP basic authentication
-	  if(!options.headers.authorization && options.auth)
-	    options.headers.authorization = 'Basic ' + b64_enc(options.auth.username + ':' + options.auth.password);
-
-	  return run_xhr(options)
-	}
-
-	var req_seq = 0
-	function run_xhr(options) {
-	  var xhr = new XHR
-	    , timed_out = false
-	    , is_cors = is_crossDomain(options.uri)
-	    , supports_cors = ('withCredentials' in xhr)
-
-	  req_seq += 1
-	  xhr.seq_id = req_seq
-	  xhr.id = req_seq + ': ' + options.method + ' ' + options.uri
-	  xhr._id = xhr.id // I know I will type "_id" from habit all the time.
-
-	  if(is_cors && !supports_cors) {
-	    var cors_err = new Error('Browser does not support cross-origin request: ' + options.uri)
-	    cors_err.cors = 'unsupported'
-	    return options.callback(cors_err, xhr)
-	  }
-
-	  xhr.timeoutTimer = setTimeout(too_late, options.timeout)
-	  function too_late() {
-	    timed_out = true
-	    var er = new Error('ETIMEDOUT')
-	    er.code = 'ETIMEDOUT'
-	    er.duration = options.timeout
-
-	    request.log.error('Timeout', { 'id':xhr._id, 'milliseconds':options.timeout })
-	    return options.callback(er, xhr)
-	  }
-
-	  // Some states can be skipped over, so remember what is still incomplete.
-	  var did = {'response':false, 'loading':false, 'end':false}
-
-	  xhr.onreadystatechange = on_state_change
-	  xhr.open(options.method, options.uri, true) // asynchronous
-	  if(is_cors)
-	    xhr.withCredentials = !! options.withCredentials
-	  xhr.send(options.body)
-	  return xhr
-
-	  function on_state_change(event) {
-	    if(timed_out)
-	      return request.log.debug('Ignoring timed out state change', {'state':xhr.readyState, 'id':xhr.id})
-
-	    request.log.debug('State change', {'state':xhr.readyState, 'id':xhr.id, 'timed_out':timed_out})
-
-	    if(xhr.readyState === XHR.OPENED) {
-	      request.log.debug('Request started', {'id':xhr.id})
-	      for (var key in options.headers)
-	        xhr.setRequestHeader(key, options.headers[key])
-	    }
-
-	    else if(xhr.readyState === XHR.HEADERS_RECEIVED)
-	      on_response()
-
-	    else if(xhr.readyState === XHR.LOADING) {
-	      on_response()
-	      on_loading()
-	    }
-
-	    else if(xhr.readyState === XHR.DONE) {
-	      on_response()
-	      on_loading()
-	      on_end()
-	    }
-	  }
-
-	  function on_response() {
-	    if(did.response)
-	      return
-
-	    did.response = true
-	    request.log.debug('Got response', {'id':xhr.id, 'status':xhr.status})
-	    clearTimeout(xhr.timeoutTimer)
-	    xhr.statusCode = xhr.status // Node request compatibility
-
-	    // Detect failed CORS requests.
-	    if(is_cors && xhr.statusCode == 0) {
-	      var cors_err = new Error('CORS request rejected: ' + options.uri)
-	      cors_err.cors = 'rejected'
-
-	      // Do not process this request further.
-	      did.loading = true
-	      did.end = true
-
-	      return options.callback(cors_err, xhr)
-	    }
-
-	    options.onResponse(null, xhr)
-	  }
-
-	  function on_loading() {
-	    if(did.loading)
-	      return
-
-	    did.loading = true
-	    request.log.debug('Response body loading', {'id':xhr.id})
-	    // TODO: Maybe simulate "data" events by watching xhr.responseText
-	  }
-
-	  function on_end() {
-	    if(did.end)
-	      return
-
-	    did.end = true
-	    request.log.debug('Request done', {'id':xhr.id})
-
-	    xhr.body = xhr.responseText
-	    if(options.json) {
-	      try        { xhr.body = JSON.parse(xhr.responseText) }
-	      catch (er) { return options.callback(er, xhr)        }
-	    }
-
-	    options.callback(null, xhr, xhr.body)
-	  }
-
-	} // request
-
-	request.withCredentials = false;
-	request.DEFAULT_TIMEOUT = DEFAULT_TIMEOUT;
-
-	//
-	// defaults
-	//
-
-	request.defaults = function(options, requester) {
-	  var def = function (method) {
-	    var d = function (params, callback) {
-	      if(typeof params === 'string')
-	        params = {'uri': params};
-	      else {
-	        params = JSON.parse(JSON.stringify(params));
-	      }
-	      for (var i in options) {
-	        if (params[i] === undefined) params[i] = options[i]
-	      }
-	      return method(params, callback)
-	    }
-	    return d
-	  }
-	  var de = def(request)
-	  de.get = def(request.get)
-	  de.post = def(request.post)
-	  de.put = def(request.put)
-	  de.head = def(request.head)
-	  return de
-	}
-
-	//
-	// HTTP method shortcuts
-	//
-
-	var shortcuts = [ 'get', 'put', 'post', 'head' ];
-	shortcuts.forEach(function(shortcut) {
-	  var method = shortcut.toUpperCase();
-	  var func   = shortcut.toLowerCase();
-
-	  request[func] = function(opts) {
-	    if(typeof opts === 'string')
-	      opts = {'method':method, 'uri':opts};
-	    else {
-	      opts = JSON.parse(JSON.stringify(opts));
-	      opts.method = method;
-	    }
-
-	    var args = [opts].concat(Array.prototype.slice.apply(arguments, [1]));
-	    return request.apply(this, args);
-	  }
-	})
-
-	//
-	// CouchDB shortcut
-	//
-
-	request.couch = function(options, callback) {
-	  if(typeof options === 'string')
-	    options = {'uri':options}
-
-	  // Just use the request API to do JSON.
-	  options.json = true
-	  if(options.body)
-	    options.json = options.body
-	  delete options.body
-
-	  callback = callback || noop
-
-	  var xhr = request(options, couch_handler)
-	  return xhr
-
-	  function couch_handler(er, resp, body) {
-	    if(er)
-	      return callback(er, resp, body)
-
-	    if((resp.statusCode < 200 || resp.statusCode > 299) && body.error) {
-	      // The body is a Couch JSON object indicating the error.
-	      er = new Error('CouchDB error: ' + (body.error.reason || body.error.error))
-	      for (var key in body)
-	        er[key] = body[key]
-	      return callback(er, resp, body);
-	    }
-
-	    return callback(er, resp, body);
-	  }
-	}
-
-	//
-	// Utility
-	//
-
-	function noop() {}
-
-	function getLogger() {
-	  var logger = {}
-	    , levels = ['trace', 'debug', 'info', 'warn', 'error']
-	    , level, i
-
-	  for(i = 0; i < levels.length; i++) {
-	    level = levels[i]
-
-	    logger[level] = noop
-	    if(typeof console !== 'undefined' && console && console[level])
-	      logger[level] = formatted(console, level)
-	  }
-
-	  return logger
-	}
-
-	function formatted(obj, method) {
-	  return formatted_logger
-
-	  function formatted_logger(str, context) {
-	    if(typeof context === 'object')
-	      str += ' ' + JSON.stringify(context)
-
-	    return obj[method].call(obj, str)
-	  }
-	}
-
-	// Return whether a URL is a cross-domain request.
-	function is_crossDomain(url) {
-	  var rurl = /^([\w\+\.\-]+:)(?:\/\/([^\/?#:]*)(?::(\d+))?)?/
-
-	  // jQuery #8138, IE may throw an exception when accessing
-	  // a field from window.location if document.domain has been set
-	  var ajaxLocation
-	  try { ajaxLocation = location.href }
-	  catch (e) {
-	    // Use the href attribute of an A element since IE will modify it given document.location
-	    ajaxLocation = document.createElement( "a" );
-	    ajaxLocation.href = "";
-	    ajaxLocation = ajaxLocation.href;
-	  }
-
-	  var ajaxLocParts = rurl.exec(ajaxLocation.toLowerCase()) || []
-	    , parts = rurl.exec(url.toLowerCase() )
-
-	  var result = !!(
-	    parts &&
-	    (  parts[1] != ajaxLocParts[1]
-	    || parts[2] != ajaxLocParts[2]
-	    || (parts[3] || (parts[1] === "http:" ? 80 : 443)) != (ajaxLocParts[3] || (ajaxLocParts[1] === "http:" ? 80 : 443))
-	    )
-	  )
-
-	  //console.debug('is_crossDomain('+url+') -> ' + result)
-	  return result
-	}
-
-	// MIT License from http://phpjs.org/functions/base64_encode:358
-	function b64_enc (data) {
-	    // Encodes string using MIME base64 algorithm
-	    var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
-	    var o1, o2, o3, h1, h2, h3, h4, bits, i = 0, ac = 0, enc="", tmp_arr = [];
-
-	    if (!data) {
-	        return data;
-	    }
-
-	    // assume utf8 data
-	    // data = this.utf8_encode(data+'');
-
-	    do { // pack three octets into four hexets
-	        o1 = data.charCodeAt(i++);
-	        o2 = data.charCodeAt(i++);
-	        o3 = data.charCodeAt(i++);
-
-	        bits = o1<<16 | o2<<8 | o3;
-
-	        h1 = bits>>18 & 0x3f;
-	        h2 = bits>>12 & 0x3f;
-	        h3 = bits>>6 & 0x3f;
-	        h4 = bits & 0x3f;
-
-	        // use hexets to index into b64, and append result to encoded string
-	        tmp_arr[ac++] = b64.charAt(h1) + b64.charAt(h2) + b64.charAt(h3) + b64.charAt(h4);
-	    } while (i < data.length);
-
-	    enc = tmp_arr.join('');
-
-	    switch (data.length % 3) {
-	        case 1:
-	            enc = enc.slice(0, -2) + '==';
-	        break;
-	        case 2:
-	            enc = enc.slice(0, -1) + '=';
-	        break;
-	    }
-
-	    return enc;
-	}
-	module.exports = request;
-
-
-/***/ },
 /* 10 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function(){
 	  var React, _, Practice, Data, ref$, div, span, ul, li, img, ns, onClick, CubeControl, Talk, Talks;
 	  React = __webpack_require__(7);
-	  _ = __webpack_require__(51);
+	  _ = __webpack_require__(49);
 	  Practice = __webpack_require__(15);
 	  Data = __webpack_require__(13);
 	  ref$ = React.DOM, div = ref$.div, span = ref$.span, ul = ref$.ul, li = ref$.li, img = ref$.img;
 	  ref$ = __webpack_require__(14), ns = ref$.ns, onClick = ref$.onClick;
 	  CubeControl = __webpack_require__(16).Sentence;
-	  __webpack_require__(47);
+	  __webpack_require__(45);
 	  Talk = React.createClass({
 	    displayName: 'CC.Talks.Talk',
 	    getDefaultProps: function(){
@@ -2758,7 +2758,7 @@
 	    };
 
 	    /* global define:true module:true window: true */
-	    if ("function" === 'function' && __webpack_require__(49)['amd']) {
+	    if ("function" === 'function' && __webpack_require__(52)['amd']) {
 	      !(__WEBPACK_AMD_DEFINE_RESULT__ = function() { return es6$promise$umd$$ES6Promise; }.call(exports, __webpack_require__, exports, module), __WEBPACK_AMD_DEFINE_RESULT__ !== undefined && (module.exports = __WEBPACK_AMD_DEFINE_RESULT__));
 	    } else if (typeof module !== 'undefined' && module['exports']) {
 	      module['exports'] = es6$promise$umd$$ES6Promise;
@@ -2766,7 +2766,7 @@
 	      this['ES6Promise'] = es6$promise$umd$$ES6Promise;
 	    }
 	}).call(this);
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38), (function() { return this; }()), __webpack_require__(50)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38), (function() { return this; }()), __webpack_require__(53)(module)))
 
 /***/ },
 /* 12 */
@@ -2933,8 +2933,8 @@
 	(function(){
 	  var Promise, ref$, Node, Char, segment, Talks, recommend, lookup, data;
 	  Promise = __webpack_require__(11).Promise;
-	  ref$ = __webpack_require__(45), Node = ref$.Node, Char = ref$.Char, segment = ref$.segment;
-	  Talks = __webpack_require__(46).Talks;
+	  ref$ = __webpack_require__(43), Node = ref$.Node, Char = ref$.Char, segment = ref$.segment;
+	  Talks = __webpack_require__(44).Talks;
 	  recommend = function(sentence){
 	    return new Promise(function(resolve, reject){
 	      return Talks.recommend(sentence, function(err, segs){
@@ -3115,7 +3115,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	(function(){
-	  module.exports = __webpack_require__(52);
+	  module.exports = __webpack_require__(50);
 	}).call(this);
 
 
@@ -3125,10 +3125,10 @@
 
 	(function(){
 	  var isNaN, $, React, Data, zhStrokeData, ref$, a, div, i, img, nav, span, onClick, sayIt, AudioControl, Character, UndoCut, Howler, Howl, API, Word, ActionMenu, SettingsButton, Stroker, Sentence, split$ = ''.split;
-	  isNaN = __webpack_require__(51).isNaN;
-	  $ = __webpack_require__(167);
+	  isNaN = __webpack_require__(49).isNaN;
+	  $ = __webpack_require__(166);
 	  React = __webpack_require__(7);
-	  Data = __webpack_require__(45);
+	  Data = __webpack_require__(43);
 	  zhStrokeData = (function(){
 	    try {
 	      return __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"zhStrokeData\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
@@ -3302,7 +3302,7 @@
 	    }
 	  });
 	  ref$ = __webpack_require__(120), Howler = ref$.Howler, Howl = ref$.Howl;
-	  API = __webpack_require__(46);
+	  API = __webpack_require__(44);
 	  Word = React.createClass({
 	    displayName: 'CUBE.Word',
 	    getDefaultProps: function(){
@@ -11167,7 +11167,7 @@
 
 	module.exports = Stream;
 
-	var EE = __webpack_require__(166).EventEmitter;
+	var EE = __webpack_require__(167).EventEmitter;
 	var inherits = __webpack_require__(170);
 
 	inherits(Stream, EE);
@@ -11323,98 +11323,10 @@
 /* 43 */
 /***/ function(module, exports, __webpack_require__) {
 
-	if (typeof Object.create === 'function') {
-	  // implementation from standard node.js 'util' module
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor
-	    ctor.prototype = Object.create(superCtor.prototype, {
-	      constructor: {
-	        value: ctor,
-	        enumerable: false,
-	        writable: true,
-	        configurable: true
-	      }
-	    });
-	  };
-	} else {
-	  // old school shim for old browsers
-	  module.exports = function inherits(ctor, superCtor) {
-	    ctor.super_ = superCtor
-	    var TempCtor = function () {}
-	    TempCtor.prototype = superCtor.prototype
-	    ctor.prototype = new TempCtor()
-	    ctor.prototype.constructor = ctor
-	  }
-	}
-
-
-/***/ },
-/* 44 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// shim for using process in browser
-
-	var process = module.exports = {};
-
-	process.nextTick = (function () {
-	    var canSetImmediate = typeof window !== 'undefined'
-	    && window.setImmediate;
-	    var canPost = typeof window !== 'undefined'
-	    && window.postMessage && window.addEventListener
-	    ;
-
-	    if (canSetImmediate) {
-	        return function (f) { return window.setImmediate(f) };
-	    }
-
-	    if (canPost) {
-	        var queue = [];
-	        window.addEventListener('message', function (ev) {
-	            var source = ev.source;
-	            if ((source === window || source === null) && ev.data === 'process-tick') {
-	                ev.stopPropagation();
-	                if (queue.length > 0) {
-	                    var fn = queue.shift();
-	                    fn();
-	                }
-	            }
-	        }, true);
-
-	        return function nextTick(fn) {
-	            queue.push(fn);
-	            window.postMessage('process-tick', '*');
-	        };
-	    }
-
-	    return function nextTick(fn) {
-	        setTimeout(fn, 0);
-	    };
-	})();
-
-	process.title = 'browser';
-	process.browser = true;
-	process.env = {};
-	process.argv = [];
-
-	process.binding = function (name) {
-	    throw new Error('process.binding is not supported');
-	}
-
-	// TODO(shtylman)
-	process.cwd = function () { return '/' };
-	process.chdir = function (dir) {
-	    throw new Error('process.chdir is not supported');
-	};
-
-
-/***/ },
-/* 45 */
-/***/ function(module, exports, __webpack_require__) {
-
 	(function(){
 	  var fs, ref$, isArray, isString, flatten, max, min, map, zipObject, slice, shadow, masterPage, c, Char, o, Node, punctuations, Dict, Segmentations, utils;
 	  try {
-	    fs = __webpack_require__(8);
+	    fs = __webpack_require__(9);
 	  } catch (e$) {}
 	  fs == null && (fs = {
 	    readFile: function(path, done){
@@ -11423,7 +11335,7 @@
 	      }, 'text');
 	    }
 	  });
-	  ref$ = __webpack_require__(51), isArray = ref$.isArray, isString = ref$.isString, flatten = ref$.flatten, max = ref$.max, min = ref$.min, map = ref$.map, zipObject = ref$.zipObject;
+	  ref$ = __webpack_require__(49), isArray = ref$.isArray, isString = ref$.isString, flatten = ref$.flatten, max = ref$.max, min = ref$.min, map = ref$.map, zipObject = ref$.zipObject;
 	  slice = Array.prototype.slice;
 	  shadow = '0 0 5px 5px rgba(0,0,0,0.1);';
 	  masterPage = {
@@ -11908,12 +11820,12 @@
 
 
 /***/ },
-/* 46 */
+/* 44 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function(){
 	  var request, Buffer, remoteTalks, remoteBooks, getBase64, getJson, CubeList, Cube, Book, getCube, getCubeList, getBookList, Talks, Books, API;
-	  request = __webpack_require__(9);
+	  request = __webpack_require__(8);
 	  Buffer = __webpack_require__(39);
 	  Buffer = Buffer.Buffer || Buffer;
 	  remoteTalks = 'https://apis-beta.chinesecubes.com/static/CubeTalks';
@@ -12072,16 +11984,16 @@
 
 
 /***/ },
-/* 47 */
+/* 45 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 
 	// load the styles
-	var content = __webpack_require__(48);
+	var content = __webpack_require__(46);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(53)(content, {});
+	var update = __webpack_require__(51)(content, {});
 	// Hot Module Replacement
 	if(false) {
 		// When the styles change, update the <style> tags
@@ -12095,37 +12007,102 @@
 	}
 
 /***/ },
-/* 48 */
+/* 46 */
 /***/ function(module, exports, __webpack_require__) {
 
 	exports = module.exports = __webpack_require__(115)();
 	exports.push([module.id, ".cc-talks .playground {\n  box-sizing: border-box;\n  position: relative;\n  width: 100%;\n  height: 100%;\n  min-height: 40.2rem;\n  background-color: #f1f1f1;\n  background-size: 100% auto;\n  background-position: 50% 50%;\n}\n.cc-talks .playground .sentence > .word > .menu-cut {\n  top: -10.5rem;\n}\n.cc-talks .playground .comp.sentence {\n  position: relative;\n  background: rgba(255,255,255,0.666);\n  padding: 12rem 1rem 12rem 1rem;\n  border-radius: 3rem;\n  text-align: center;\n}\n.cc-talks .playground .comp.word {\n  position: relative;\n  display: inline-block;\n  margin-right: 2rem;\n}\n.cc-talks .playground .comp.word:last-child {\n  margin-right: 0;\n}\n.cc-talks .playground .comp.word .meaning {\n  pointer-events: none;\n  position: absolute;\n  left: -100%;\n  right: -100%;\n  top: -2.7rem;\n  opacity: 0;\n}\n.cc-talks .playground .comp.word .meaning.actived {\n  opacity: 1;\n}\n.cc-talks .playground .comp.word .meaning span {\n  font-size: 1rem;\n  position: relative;\n  padding: 0.3rem 0.6rem;\n  border-radius: 0.3rem;\n  background: #f94646;\n  color: #fff;\n}\n.cc-talks .playground .comp.word .meaning span:before {\n  content: '';\n  position: absolute;\n  top: 98%;\n  left: 50%;\n  margin-left: -0.4rem;\n  width: 0;\n  height: 0;\n  border-style: solid;\n  border-width: 0.4rem 0.4rem 0 0.4rem;\n  border-color: #f94646 transparent transparent transparent;\n}\n.cc-talks .playground .comp.character {\n  position: relative;\n  display: inline-block;\n  padding: 0.8rem;\n  background: #fff;\n  color: #f94646;\n  border: 0.1rem solid #c7c7c7;\n  border-radius: 0.5rem;\n  margin-right: 0.1rem;\n}\n.cc-talks .playground .comp.character:last-child {\n  margin-right: 0;\n}\n.cc-talks .playground .comp.character .char {\n  font-weight: bold;\n  font-size: 2.4rem;\n}\n.cc-talks .playground .comp.character .pronounciation {\n  pointer-events: none;\n  position: absolute;\n  top: -2.7rem;\n  left: -100%;\n  right: -100%;\n  opacity: 0;\n}\n.cc-talks .playground .comp.character .pronounciation.actived {\n  opacity: 1;\n}\n.cc-talks .playground .comp.character .pronounciation span {\n  font-size: 1rem;\n  position: relative;\n  padding: 0.3rem 0.6rem;\n  border-radius: 0.3rem;\n  background: #f94646;\n  color: #fff;\n}\n.cc-talks .playground .comp.character .pronounciation span:before {\n  content: '';\n  position: absolute;\n  top: 98%;\n  left: 50%;\n  margin-left: -0.4rem;\n  width: 0;\n  height: 0;\n  border-style: solid;\n  border-width: 0.4rem 0.4rem 0 0.4rem;\n  border-color: #f94646 transparent transparent transparent;\n}\n.cc-talks .playground .button {\n  display: inline-block;\n  margin-right: 0.5rem;\n  pointer-events: auto;\n/**\n      &.actived\n        .icon\n          background icon-strong-bg\n      /**/\n}\n.cc-talks .playground .button.disabled {\n  opacity: 0;\n  pointer-events: none;\n}\n.cc-talks .playground .button:last-child {\n  margin-right: 0;\n}\n.cc-talks .playground .button .icon {\n  display: block;\n  cursor: pointer;\n  pointer-events: auto;\n  width: 3.2rem;\n  height: 3.2rem;\n  border-radius: 1.6rem;\n  color: #fff;\n  background: #7c8284;\n/**\n        &.cut\n          width  icon-r * 2 * icon-cut-scale\n          height icon-r * 2 * icon-cut-scale\n          line-height icon-r * 2 * icon-cut-scale\n          border-radius icon-r * icon-cut-scale\n          font-size 1.6rem\n        /**/\n}\n.cc-talks .playground .button .icon:hover {\n  background: #f94646;\n}\n.cc-talks .playground .button.actived .icon {\n  background: #f94646;\n}\n.cc-talks .playground .comp.undo-cut {\n  position: absolute;\n  top: 10.5rem;\n  left: 50%;\n  margin-left: -1.6rem;\n  text-align: center;\n}\n.cc-talks .playground .comp.undo-cut i.repeat.icon:before {\n  font-family: 'icomoon';\n  font-size: 2.4rem;\n  line-height: 3.2rem;\n  content: \"\\e603\";\n  speak: none;\n  font-style: normal;\n  font-weight: normal;\n  font-variant: normal;\n  text-transform: none;\n}\n.cc-talks .playground .comp.undo-cut .button {\n  display: none;\n}\n.cc-talks .playground .comp.undo-cut .button.actived {\n  display: block;\n}\n.cc-talks .playground .comp.undo-cut .button.actived .icon {\n  background: #7c8284;\n}\n.cc-talks .playground .comp.undo-cut .button.actived .icon:hover {\n  background: #f94646;\n}\n.cc-talks .playground .actions {\n  position: absolute;\n  pointer-events: none;\n  left: -100%;\n  right: -100%;\n}\n.cc-talks .playground .actions i.icon {\n  font-family: 'icomoon';\n  speak: none;\n  font-style: normal;\n  font-weight: normal;\n  font-variant: normal;\n  text-transform: none;\n  font-size: 1.2rem;\n  line-height: 3.3600000000000003rem;\n}\n.cc-talks .playground .menu-cut {\n  top: -6.2rem;\n}\n.cc-talks .playground .menu-cut i.icon.cut:before {\n  content: \"\\e605\";\n}\n.cc-talks .playground .menu-learn {\n  bottom: -3.7rem;\n}\n.cc-talks .playground .menu-learn i.icon.volume.up:before {\n  content: \"\\e604\";\n}\n.cc-talks .playground .menu-learn i.icon.pencil:before {\n  content: \"\\e606\";\n}\n.cc-talks .playground .menu-learn i.icon.font:before {\n  content: \"\\e601\";\n}\n.cc-talks .playground .navbar,\n.cc-talks .playground .entry {\n  display: none;\n}\n.cc-talks .playground .strokes {\n  z-index: 2;\n  background: #fff;\n  position: absolute;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  margin: auto;\n  width: 215px;\n  height: 215px;\n  padding: 1rem;\n  border: 4px solid #e05656;\n  border-radius: 1.5rem;\n}\n.cc-talks .playground .strokes .grid {\n  position: absolute;\n  top: 1rem;\n  left: 1rem;\n  bottom: 1rem;\n  right: 1rem;\n  border: 1px solid #e0e0e0;\n  border-radius: 1rem;\n}\n.cc-talks .playground .strokes .grid:before,\n.cc-talks .playground .strokes .grid:after {\n  content: '';\n  position: absolute;\n  top: 0;\n  left: 0;\n  bottom: 0;\n  right: 0;\n  margin: auto;\n  border: 1px dashed #e0e0e0;\n}\n.cc-talks .playground .strokes .grid:before {\n  height: 33.33%;\n  border-left-width: 0;\n  border-right-width: 0;\n}\n.cc-talks .playground .strokes .grid:after {\n  width: 33.33%;\n  border-top-width: 0;\n  border-bottom-width: 0;\n}\n.cc-talks .playground .strokes canvas {\n  position: absolute;\n  left: 1rem;\n  top: 1rem;\n}\n.cc-talks .playground .strokes .fallback {\n  background-size: cover;\n  width: 215px;\n  height: 215px;\n}\n.cc-talks .text span {\n  cursor: pointer;\n  opacity: 0;\n  pointer-events: none;\n}\n.cc-talks .text span.actived {\n  opacity: 1;\n  pointer-events: auto;\n}\n", ""]);
 
 /***/ },
-/* 49 */
+/* 47 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = function() { throw new Error("define cannot be used indirect"); };
+	// shim for using process in browser
+
+	var process = module.exports = {};
+
+	process.nextTick = (function () {
+	    var canSetImmediate = typeof window !== 'undefined'
+	    && window.setImmediate;
+	    var canPost = typeof window !== 'undefined'
+	    && window.postMessage && window.addEventListener
+	    ;
+
+	    if (canSetImmediate) {
+	        return function (f) { return window.setImmediate(f) };
+	    }
+
+	    if (canPost) {
+	        var queue = [];
+	        window.addEventListener('message', function (ev) {
+	            var source = ev.source;
+	            if ((source === window || source === null) && ev.data === 'process-tick') {
+	                ev.stopPropagation();
+	                if (queue.length > 0) {
+	                    var fn = queue.shift();
+	                    fn();
+	                }
+	            }
+	        }, true);
+
+	        return function nextTick(fn) {
+	            queue.push(fn);
+	            window.postMessage('process-tick', '*');
+	        };
+	    }
+
+	    return function nextTick(fn) {
+	        setTimeout(fn, 0);
+	    };
+	})();
+
+	process.title = 'browser';
+	process.browser = true;
+	process.env = {};
+	process.argv = [];
+
+	process.binding = function (name) {
+	    throw new Error('process.binding is not supported');
+	}
+
+	// TODO(shtylman)
+	process.cwd = function () { return '/' };
+	process.chdir = function (dir) {
+	    throw new Error('process.chdir is not supported');
+	};
 
 
 /***/ },
-/* 50 */
+/* 48 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = function(module) {
-		if(!module.webpackPolyfill) {
-			module.deprecate = function() {};
-			module.paths = [];
-			// module.parent = undefined by default
-			module.children = [];
-			module.webpackPolyfill = 1;
-		}
-		return module;
+	if (typeof Object.create === 'function') {
+	  // implementation from standard node.js 'util' module
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    ctor.prototype = Object.create(superCtor.prototype, {
+	      constructor: {
+	        value: ctor,
+	        enumerable: false,
+	        writable: true,
+	        configurable: true
+	      }
+	    });
+	  };
+	} else {
+	  // old school shim for old browsers
+	  module.exports = function inherits(ctor, superCtor) {
+	    ctor.super_ = superCtor
+	    var TempCtor = function () {}
+	    TempCtor.prototype = superCtor.prototype
+	    ctor.prototype = new TempCtor()
+	    ctor.prototype.constructor = ctor
+	  }
 	}
 
 
 /***/ },
-/* 51 */
+/* 49 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(module, global) {/**
@@ -19286,10 +19263,10 @@
 	  }
 	}.call(this));
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(50)(module), (function() { return this; }())))
+	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(53)(module), (function() { return this; }())))
 
 /***/ },
-/* 52 */
+/* 50 */
 /***/ function(module, exports, __webpack_require__) {
 
 	(function(){
@@ -19415,7 +19392,7 @@
 
 
 /***/ },
-/* 53 */
+/* 51 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
@@ -19607,6 +19584,29 @@
 			}
 			styleElement.appendChild(document.createTextNode(css));
 		}
+	}
+
+
+/***/ },
+/* 52 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function() { throw new Error("define cannot be used indirect"); };
+
+
+/***/ },
+/* 53 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = function(module) {
+		if(!module.webpackPolyfill) {
+			module.deprecate = function() {};
+			module.paths = [];
+			// module.parent = undefined by default
+			module.children = [];
+			module.webpackPolyfill = 1;
+		}
+		return module;
 	}
 
 
@@ -27060,7 +27060,7 @@
 	  var React, CharBox, reduce, ref$, div, span, ul, li, ns, onClick, ModeGame;
 	  React = __webpack_require__(7);
 	  CharBox = __webpack_require__(177);
-	  reduce = __webpack_require__(51).reduce;
+	  reduce = __webpack_require__(49).reduce;
 	  ref$ = React.DOM, div = ref$.div, span = ref$.span, ul = ref$.ul, li = ref$.li;
 	  ref$ = __webpack_require__(14), ns = ref$.ns, onClick = ref$.onClick;
 	  ModeGame = module.exports = React.createClass({
@@ -27270,7 +27270,7 @@
 
 	(function(){
 	  var $, React, div, ns, Char;
-	  $ = __webpack_require__(167);
+	  $ = __webpack_require__(166);
 	  React = __webpack_require__(7);
 	  __webpack_require__(194);
 	  __webpack_require__(178)($);
@@ -32984,313 +32984,6 @@
 
 /***/ },
 /* 166 */
-/***/ function(module, exports, __webpack_require__) {
-
-	// Copyright Joyent, Inc. and other Node contributors.
-	//
-	// Permission is hereby granted, free of charge, to any person obtaining a
-	// copy of this software and associated documentation files (the
-	// "Software"), to deal in the Software without restriction, including
-	// without limitation the rights to use, copy, modify, merge, publish,
-	// distribute, sublicense, and/or sell copies of the Software, and to permit
-	// persons to whom the Software is furnished to do so, subject to the
-	// following conditions:
-	//
-	// The above copyright notice and this permission notice shall be included
-	// in all copies or substantial portions of the Software.
-	//
-	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
-	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
-	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
-	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
-	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
-	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
-	// USE OR OTHER DEALINGS IN THE SOFTWARE.
-
-	function EventEmitter() {
-	  this._events = this._events || {};
-	  this._maxListeners = this._maxListeners || undefined;
-	}
-	module.exports = EventEmitter;
-
-	// Backwards-compat with node 0.10.x
-	EventEmitter.EventEmitter = EventEmitter;
-
-	EventEmitter.prototype._events = undefined;
-	EventEmitter.prototype._maxListeners = undefined;
-
-	// By default EventEmitters will print a warning if more than 10 listeners are
-	// added to it. This is a useful default which helps finding memory leaks.
-	EventEmitter.defaultMaxListeners = 10;
-
-	// Obviously not all Emitters should be limited to 10. This function allows
-	// that to be increased. Set to zero for unlimited.
-	EventEmitter.prototype.setMaxListeners = function(n) {
-	  if (!isNumber(n) || n < 0 || isNaN(n))
-	    throw TypeError('n must be a positive number');
-	  this._maxListeners = n;
-	  return this;
-	};
-
-	EventEmitter.prototype.emit = function(type) {
-	  var er, handler, len, args, i, listeners;
-
-	  if (!this._events)
-	    this._events = {};
-
-	  // If there is no 'error' event listener then throw.
-	  if (type === 'error') {
-	    if (!this._events.error ||
-	        (isObject(this._events.error) && !this._events.error.length)) {
-	      er = arguments[1];
-	      if (er instanceof Error) {
-	        throw er; // Unhandled 'error' event
-	      }
-	      throw TypeError('Uncaught, unspecified "error" event.');
-	    }
-	  }
-
-	  handler = this._events[type];
-
-	  if (isUndefined(handler))
-	    return false;
-
-	  if (isFunction(handler)) {
-	    switch (arguments.length) {
-	      // fast cases
-	      case 1:
-	        handler.call(this);
-	        break;
-	      case 2:
-	        handler.call(this, arguments[1]);
-	        break;
-	      case 3:
-	        handler.call(this, arguments[1], arguments[2]);
-	        break;
-	      // slower
-	      default:
-	        len = arguments.length;
-	        args = new Array(len - 1);
-	        for (i = 1; i < len; i++)
-	          args[i - 1] = arguments[i];
-	        handler.apply(this, args);
-	    }
-	  } else if (isObject(handler)) {
-	    len = arguments.length;
-	    args = new Array(len - 1);
-	    for (i = 1; i < len; i++)
-	      args[i - 1] = arguments[i];
-
-	    listeners = handler.slice();
-	    len = listeners.length;
-	    for (i = 0; i < len; i++)
-	      listeners[i].apply(this, args);
-	  }
-
-	  return true;
-	};
-
-	EventEmitter.prototype.addListener = function(type, listener) {
-	  var m;
-
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-
-	  if (!this._events)
-	    this._events = {};
-
-	  // To avoid recursion in the case that type === "newListener"! Before
-	  // adding it to the listeners, first emit "newListener".
-	  if (this._events.newListener)
-	    this.emit('newListener', type,
-	              isFunction(listener.listener) ?
-	              listener.listener : listener);
-
-	  if (!this._events[type])
-	    // Optimize the case of one listener. Don't need the extra array object.
-	    this._events[type] = listener;
-	  else if (isObject(this._events[type]))
-	    // If we've already got an array, just append.
-	    this._events[type].push(listener);
-	  else
-	    // Adding the second element, need to change to array.
-	    this._events[type] = [this._events[type], listener];
-
-	  // Check for listener leak
-	  if (isObject(this._events[type]) && !this._events[type].warned) {
-	    var m;
-	    if (!isUndefined(this._maxListeners)) {
-	      m = this._maxListeners;
-	    } else {
-	      m = EventEmitter.defaultMaxListeners;
-	    }
-
-	    if (m && m > 0 && this._events[type].length > m) {
-	      this._events[type].warned = true;
-	      console.error('(node) warning: possible EventEmitter memory ' +
-	                    'leak detected. %d listeners added. ' +
-	                    'Use emitter.setMaxListeners() to increase limit.',
-	                    this._events[type].length);
-	      if (typeof console.trace === 'function') {
-	        // not supported in IE 10
-	        console.trace();
-	      }
-	    }
-	  }
-
-	  return this;
-	};
-
-	EventEmitter.prototype.on = EventEmitter.prototype.addListener;
-
-	EventEmitter.prototype.once = function(type, listener) {
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-
-	  var fired = false;
-
-	  function g() {
-	    this.removeListener(type, g);
-
-	    if (!fired) {
-	      fired = true;
-	      listener.apply(this, arguments);
-	    }
-	  }
-
-	  g.listener = listener;
-	  this.on(type, g);
-
-	  return this;
-	};
-
-	// emits a 'removeListener' event iff the listener was removed
-	EventEmitter.prototype.removeListener = function(type, listener) {
-	  var list, position, length, i;
-
-	  if (!isFunction(listener))
-	    throw TypeError('listener must be a function');
-
-	  if (!this._events || !this._events[type])
-	    return this;
-
-	  list = this._events[type];
-	  length = list.length;
-	  position = -1;
-
-	  if (list === listener ||
-	      (isFunction(list.listener) && list.listener === listener)) {
-	    delete this._events[type];
-	    if (this._events.removeListener)
-	      this.emit('removeListener', type, listener);
-
-	  } else if (isObject(list)) {
-	    for (i = length; i-- > 0;) {
-	      if (list[i] === listener ||
-	          (list[i].listener && list[i].listener === listener)) {
-	        position = i;
-	        break;
-	      }
-	    }
-
-	    if (position < 0)
-	      return this;
-
-	    if (list.length === 1) {
-	      list.length = 0;
-	      delete this._events[type];
-	    } else {
-	      list.splice(position, 1);
-	    }
-
-	    if (this._events.removeListener)
-	      this.emit('removeListener', type, listener);
-	  }
-
-	  return this;
-	};
-
-	EventEmitter.prototype.removeAllListeners = function(type) {
-	  var key, listeners;
-
-	  if (!this._events)
-	    return this;
-
-	  // not listening for removeListener, no need to emit
-	  if (!this._events.removeListener) {
-	    if (arguments.length === 0)
-	      this._events = {};
-	    else if (this._events[type])
-	      delete this._events[type];
-	    return this;
-	  }
-
-	  // emit removeListener for all listeners on all events
-	  if (arguments.length === 0) {
-	    for (key in this._events) {
-	      if (key === 'removeListener') continue;
-	      this.removeAllListeners(key);
-	    }
-	    this.removeAllListeners('removeListener');
-	    this._events = {};
-	    return this;
-	  }
-
-	  listeners = this._events[type];
-
-	  if (isFunction(listeners)) {
-	    this.removeListener(type, listeners);
-	  } else {
-	    // LIFO order
-	    while (listeners.length)
-	      this.removeListener(type, listeners[listeners.length - 1]);
-	  }
-	  delete this._events[type];
-
-	  return this;
-	};
-
-	EventEmitter.prototype.listeners = function(type) {
-	  var ret;
-	  if (!this._events || !this._events[type])
-	    ret = [];
-	  else if (isFunction(this._events[type]))
-	    ret = [this._events[type]];
-	  else
-	    ret = this._events[type].slice();
-	  return ret;
-	};
-
-	EventEmitter.listenerCount = function(emitter, type) {
-	  var ret;
-	  if (!emitter._events || !emitter._events[type])
-	    ret = 0;
-	  else if (isFunction(emitter._events[type]))
-	    ret = 1;
-	  else
-	    ret = emitter._events[type].length;
-	  return ret;
-	};
-
-	function isFunction(arg) {
-	  return typeof arg === 'function';
-	}
-
-	function isNumber(arg) {
-	  return typeof arg === 'number';
-	}
-
-	function isObject(arg) {
-	  return typeof arg === 'object' && arg !== null;
-	}
-
-	function isUndefined(arg) {
-	  return arg === void 0;
-	}
-
-
-/***/ },
-/* 167 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -42486,6 +42179,313 @@
 
 
 /***/ },
+/* 167 */
+/***/ function(module, exports, __webpack_require__) {
+
+	// Copyright Joyent, Inc. and other Node contributors.
+	//
+	// Permission is hereby granted, free of charge, to any person obtaining a
+	// copy of this software and associated documentation files (the
+	// "Software"), to deal in the Software without restriction, including
+	// without limitation the rights to use, copy, modify, merge, publish,
+	// distribute, sublicense, and/or sell copies of the Software, and to permit
+	// persons to whom the Software is furnished to do so, subject to the
+	// following conditions:
+	//
+	// The above copyright notice and this permission notice shall be included
+	// in all copies or substantial portions of the Software.
+	//
+	// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+	// OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+	// MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN
+	// NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,
+	// DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+	// OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+	// USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+	function EventEmitter() {
+	  this._events = this._events || {};
+	  this._maxListeners = this._maxListeners || undefined;
+	}
+	module.exports = EventEmitter;
+
+	// Backwards-compat with node 0.10.x
+	EventEmitter.EventEmitter = EventEmitter;
+
+	EventEmitter.prototype._events = undefined;
+	EventEmitter.prototype._maxListeners = undefined;
+
+	// By default EventEmitters will print a warning if more than 10 listeners are
+	// added to it. This is a useful default which helps finding memory leaks.
+	EventEmitter.defaultMaxListeners = 10;
+
+	// Obviously not all Emitters should be limited to 10. This function allows
+	// that to be increased. Set to zero for unlimited.
+	EventEmitter.prototype.setMaxListeners = function(n) {
+	  if (!isNumber(n) || n < 0 || isNaN(n))
+	    throw TypeError('n must be a positive number');
+	  this._maxListeners = n;
+	  return this;
+	};
+
+	EventEmitter.prototype.emit = function(type) {
+	  var er, handler, len, args, i, listeners;
+
+	  if (!this._events)
+	    this._events = {};
+
+	  // If there is no 'error' event listener then throw.
+	  if (type === 'error') {
+	    if (!this._events.error ||
+	        (isObject(this._events.error) && !this._events.error.length)) {
+	      er = arguments[1];
+	      if (er instanceof Error) {
+	        throw er; // Unhandled 'error' event
+	      }
+	      throw TypeError('Uncaught, unspecified "error" event.');
+	    }
+	  }
+
+	  handler = this._events[type];
+
+	  if (isUndefined(handler))
+	    return false;
+
+	  if (isFunction(handler)) {
+	    switch (arguments.length) {
+	      // fast cases
+	      case 1:
+	        handler.call(this);
+	        break;
+	      case 2:
+	        handler.call(this, arguments[1]);
+	        break;
+	      case 3:
+	        handler.call(this, arguments[1], arguments[2]);
+	        break;
+	      // slower
+	      default:
+	        len = arguments.length;
+	        args = new Array(len - 1);
+	        for (i = 1; i < len; i++)
+	          args[i - 1] = arguments[i];
+	        handler.apply(this, args);
+	    }
+	  } else if (isObject(handler)) {
+	    len = arguments.length;
+	    args = new Array(len - 1);
+	    for (i = 1; i < len; i++)
+	      args[i - 1] = arguments[i];
+
+	    listeners = handler.slice();
+	    len = listeners.length;
+	    for (i = 0; i < len; i++)
+	      listeners[i].apply(this, args);
+	  }
+
+	  return true;
+	};
+
+	EventEmitter.prototype.addListener = function(type, listener) {
+	  var m;
+
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  if (!this._events)
+	    this._events = {};
+
+	  // To avoid recursion in the case that type === "newListener"! Before
+	  // adding it to the listeners, first emit "newListener".
+	  if (this._events.newListener)
+	    this.emit('newListener', type,
+	              isFunction(listener.listener) ?
+	              listener.listener : listener);
+
+	  if (!this._events[type])
+	    // Optimize the case of one listener. Don't need the extra array object.
+	    this._events[type] = listener;
+	  else if (isObject(this._events[type]))
+	    // If we've already got an array, just append.
+	    this._events[type].push(listener);
+	  else
+	    // Adding the second element, need to change to array.
+	    this._events[type] = [this._events[type], listener];
+
+	  // Check for listener leak
+	  if (isObject(this._events[type]) && !this._events[type].warned) {
+	    var m;
+	    if (!isUndefined(this._maxListeners)) {
+	      m = this._maxListeners;
+	    } else {
+	      m = EventEmitter.defaultMaxListeners;
+	    }
+
+	    if (m && m > 0 && this._events[type].length > m) {
+	      this._events[type].warned = true;
+	      console.error('(node) warning: possible EventEmitter memory ' +
+	                    'leak detected. %d listeners added. ' +
+	                    'Use emitter.setMaxListeners() to increase limit.',
+	                    this._events[type].length);
+	      if (typeof console.trace === 'function') {
+	        // not supported in IE 10
+	        console.trace();
+	      }
+	    }
+	  }
+
+	  return this;
+	};
+
+	EventEmitter.prototype.on = EventEmitter.prototype.addListener;
+
+	EventEmitter.prototype.once = function(type, listener) {
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  var fired = false;
+
+	  function g() {
+	    this.removeListener(type, g);
+
+	    if (!fired) {
+	      fired = true;
+	      listener.apply(this, arguments);
+	    }
+	  }
+
+	  g.listener = listener;
+	  this.on(type, g);
+
+	  return this;
+	};
+
+	// emits a 'removeListener' event iff the listener was removed
+	EventEmitter.prototype.removeListener = function(type, listener) {
+	  var list, position, length, i;
+
+	  if (!isFunction(listener))
+	    throw TypeError('listener must be a function');
+
+	  if (!this._events || !this._events[type])
+	    return this;
+
+	  list = this._events[type];
+	  length = list.length;
+	  position = -1;
+
+	  if (list === listener ||
+	      (isFunction(list.listener) && list.listener === listener)) {
+	    delete this._events[type];
+	    if (this._events.removeListener)
+	      this.emit('removeListener', type, listener);
+
+	  } else if (isObject(list)) {
+	    for (i = length; i-- > 0;) {
+	      if (list[i] === listener ||
+	          (list[i].listener && list[i].listener === listener)) {
+	        position = i;
+	        break;
+	      }
+	    }
+
+	    if (position < 0)
+	      return this;
+
+	    if (list.length === 1) {
+	      list.length = 0;
+	      delete this._events[type];
+	    } else {
+	      list.splice(position, 1);
+	    }
+
+	    if (this._events.removeListener)
+	      this.emit('removeListener', type, listener);
+	  }
+
+	  return this;
+	};
+
+	EventEmitter.prototype.removeAllListeners = function(type) {
+	  var key, listeners;
+
+	  if (!this._events)
+	    return this;
+
+	  // not listening for removeListener, no need to emit
+	  if (!this._events.removeListener) {
+	    if (arguments.length === 0)
+	      this._events = {};
+	    else if (this._events[type])
+	      delete this._events[type];
+	    return this;
+	  }
+
+	  // emit removeListener for all listeners on all events
+	  if (arguments.length === 0) {
+	    for (key in this._events) {
+	      if (key === 'removeListener') continue;
+	      this.removeAllListeners(key);
+	    }
+	    this.removeAllListeners('removeListener');
+	    this._events = {};
+	    return this;
+	  }
+
+	  listeners = this._events[type];
+
+	  if (isFunction(listeners)) {
+	    this.removeListener(type, listeners);
+	  } else {
+	    // LIFO order
+	    while (listeners.length)
+	      this.removeListener(type, listeners[listeners.length - 1]);
+	  }
+	  delete this._events[type];
+
+	  return this;
+	};
+
+	EventEmitter.prototype.listeners = function(type) {
+	  var ret;
+	  if (!this._events || !this._events[type])
+	    ret = [];
+	  else if (isFunction(this._events[type]))
+	    ret = [this._events[type]];
+	  else
+	    ret = this._events[type].slice();
+	  return ret;
+	};
+
+	EventEmitter.listenerCount = function(emitter, type) {
+	  var ret;
+	  if (!emitter._events || !emitter._events[type])
+	    ret = 0;
+	  else if (isFunction(emitter._events[type]))
+	    ret = 1;
+	  else
+	    ret = emitter._events[type].length;
+	  return ret;
+	};
+
+	function isFunction(arg) {
+	  return typeof arg === 'function';
+	}
+
+	function isNumber(arg) {
+	  return typeof arg === 'number';
+	}
+
+	function isObject(arg) {
+	  return typeof arg === 'object' && arg !== null;
+	}
+
+	function isUndefined(arg) {
+	  return arg === void 0;
+	}
+
+
+/***/ },
 /* 168 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -42816,7 +42816,7 @@
 
 	(function(){
 	  var $, React, ref$, div, span, ns, CharBox;
-	  $ = __webpack_require__(167);
+	  $ = __webpack_require__(166);
 	  React = __webpack_require__(7);
 	  __webpack_require__(195);
 	  ref$ = React.DOM, div = ref$.div, span = ref$.span;
@@ -43958,7 +43958,7 @@
 
 	Readable.ReadableState = ReadableState;
 
-	var EE = __webpack_require__(166).EventEmitter;
+	var EE = __webpack_require__(167).EventEmitter;
 
 	/*<replacement>*/
 	if (!EE.listenerCount) EE.listenerCount = function(emitter, type) {
@@ -45729,7 +45729,7 @@
 /* 194 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(167);
+	var jQuery = __webpack_require__(166);
 	__webpack_require__(199);
 	__webpack_require__(200);
 	__webpack_require__(201);
@@ -46698,7 +46698,7 @@
 /* 195 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(167);
+	var jQuery = __webpack_require__(166);
 	__webpack_require__(199);
 	__webpack_require__(201);
 	__webpack_require__(200);
@@ -47385,7 +47385,7 @@
 /* 199 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(167);
+	var jQuery = __webpack_require__(166);
 
 	/*!
 	 * jQuery UI Core 1.10.4
@@ -47713,7 +47713,7 @@
 /* 200 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(167);
+	var jQuery = __webpack_require__(166);
 	__webpack_require__(201);
 
 	/*!
@@ -47891,7 +47891,7 @@
 /* 201 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var jQuery = __webpack_require__(167);
+	var jQuery = __webpack_require__(166);
 
 	/*!
 	 * jQuery UI Widget 1.10.4
