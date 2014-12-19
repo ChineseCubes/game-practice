@@ -828,7 +828,13 @@ body {
   bottom: 0;
   right: 0;
   overflow-x: hidden;
-  overflow-y: scroll;
+/* hidding scrollbar */
+  overflow-y: -moz-scrollbars-none;
+  -ms-overflow-style: none;
+/* end of hidding scrollbar */
+}
+.game > .view::-webkit-scrollbar {
+  width: 0 !important;
 }
 .game > .view:first-child {
   top: 0;

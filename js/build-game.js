@@ -101,12 +101,12 @@
 	    getInitialState: function(){
 	      var this$ = this;
 	      return {
-	        breadcrumb: ['title'],
+	        breadcrumb: ['home'],
 	        status: {
 	          sentences: [],
 	          i: 0
 	        },
-	        title: {
+	        home: {
 	          view: TitleScreen,
 	          props: {
 	            ready: false,
@@ -237,9 +237,9 @@
 	            }
 	          }
 	        }());
-	        this$.state.title.props.ready = true;
+	        this$.state.home.props.ready = true;
 	        return this$.setState({
-	          title: this$.state.title
+	          home: this$.state.home
 	        });
 	      });
 	    },
@@ -29498,7 +29498,7 @@
 
 	"use strict";
 
-	var hyphenate = __webpack_require__(181);
+	var hyphenate = __webpack_require__(179);
 
 	var msPattern = /^ms-/;
 
@@ -29552,8 +29552,8 @@
 	var EventPluginRegistry = __webpack_require__(130);
 	var EventPluginUtils = __webpack_require__(18);
 
-	var accumulate = __webpack_require__(179);
-	var forEachAccumulated = __webpack_require__(180);
+	var accumulate = __webpack_require__(180);
+	var forEachAccumulated = __webpack_require__(181);
 	var invariant = __webpack_require__(58);
 	var isEventSupported = __webpack_require__(133);
 	var monitorCodeUse = __webpack_require__(73);
@@ -30319,8 +30319,8 @@
 	var EventConstants = __webpack_require__(57);
 	var EventPluginHub = __webpack_require__(129);
 
-	var accumulate = __webpack_require__(179);
-	var forEachAccumulated = __webpack_require__(180);
+	var accumulate = __webpack_require__(180);
+	var forEachAccumulated = __webpack_require__(181);
 
 	var PropagationPhases = EventConstants.PropagationPhases;
 	var getListener = EventPluginHub.getListener;
@@ -30749,10 +30749,10 @@
 
 	"use strict";
 
-	var ReactDOMSelection = __webpack_require__(183);
+	var ReactDOMSelection = __webpack_require__(182);
 
 	var containsNode = __webpack_require__(107);
-	var focusNode = __webpack_require__(184);
+	var focusNode = __webpack_require__(183);
 	var getActiveElement = __webpack_require__(151);
 
 	function isInDocument(node) {
@@ -31005,7 +31005,7 @@
 	var SyntheticUIEvent = __webpack_require__(158);
 	var ViewportMetrics = __webpack_require__(132);
 
-	var getEventModifierState = __webpack_require__(182);
+	var getEventModifierState = __webpack_require__(184);
 
 	/**
 	 * @interface MouseEvent
@@ -31571,7 +31571,7 @@
 
 	"use strict";
 
-	var focusNode = __webpack_require__(184);
+	var focusNode = __webpack_require__(183);
 
 	var AutoFocusMixin = {
 	  componentDidMount: function() {
@@ -31610,8 +31610,8 @@
 
 	var ReactBrowserEventEmitter = __webpack_require__(79);
 
-	var accumulate = __webpack_require__(179);
-	var forEachAccumulated = __webpack_require__(180);
+	var accumulate = __webpack_require__(180);
+	var forEachAccumulated = __webpack_require__(181);
 	var invariant = __webpack_require__(58);
 
 	function remove(event) {
@@ -32211,7 +32211,7 @@
 	var SyntheticUIEvent = __webpack_require__(158);
 
 	var getEventKey = __webpack_require__(186);
-	var getEventModifierState = __webpack_require__(182);
+	var getEventModifierState = __webpack_require__(184);
 
 	/**
 	 * @interface KeyboardEvent
@@ -32353,7 +32353,7 @@
 
 	var SyntheticUIEvent = __webpack_require__(158);
 
-	var getEventModifierState = __webpack_require__(182);
+	var getEventModifierState = __webpack_require__(184);
 
 	/**
 	 * @interface TouchEvent
@@ -43080,6 +43080,50 @@
 /* 179 */
 /***/ function(module, exports, __webpack_require__) {
 
+	/**
+	 * Copyright 2013-2014 Facebook, Inc.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 * http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 * @providesModule hyphenate
+	 * @typechecks
+	 */
+
+	var _uppercasePattern = /([A-Z])/g;
+
+	/**
+	 * Hyphenates a camelcased string, for example:
+	 *
+	 *   > hyphenate('backgroundColor')
+	 *   < "background-color"
+	 *
+	 * For CSS style names, use `hyphenateStyleName` instead which works properly
+	 * with all vendor prefixes, including `ms`.
+	 *
+	 * @param {string} string
+	 * @return {string}
+	 */
+	function hyphenate(string) {
+	  return string.replace(_uppercasePattern, '-$1').toLowerCase();
+	}
+
+	module.exports = hyphenate;
+
+
+/***/ },
+/* 180 */
+/***/ function(module, exports, __webpack_require__) {
+
 	/* WEBPACK VAR INJECTION */(function(process) {/**
 	 * Copyright 2013-2014 Facebook, Inc.
 	 *
@@ -43138,7 +43182,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(38)))
 
 /***/ },
-/* 180 */
+/* 181 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43180,109 +43224,7 @@
 
 
 /***/ },
-/* 181 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2014 Facebook, Inc.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 * http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 *
-	 * @providesModule hyphenate
-	 * @typechecks
-	 */
-
-	var _uppercasePattern = /([A-Z])/g;
-
-	/**
-	 * Hyphenates a camelcased string, for example:
-	 *
-	 *   > hyphenate('backgroundColor')
-	 *   < "background-color"
-	 *
-	 * For CSS style names, use `hyphenateStyleName` instead which works properly
-	 * with all vendor prefixes, including `ms`.
-	 *
-	 * @param {string} string
-	 * @return {string}
-	 */
-	function hyphenate(string) {
-	  return string.replace(_uppercasePattern, '-$1').toLowerCase();
-	}
-
-	module.exports = hyphenate;
-
-
-/***/ },
 /* 182 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013 Facebook, Inc.
-	 *
-	 * Licensed under the Apache License, Version 2.0 (the "License");
-	 * you may not use this file except in compliance with the License.
-	 * You may obtain a copy of the License at
-	 *
-	 * http://www.apache.org/licenses/LICENSE-2.0
-	 *
-	 * Unless required by applicable law or agreed to in writing, software
-	 * distributed under the License is distributed on an "AS IS" BASIS,
-	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-	 * See the License for the specific language governing permissions and
-	 * limitations under the License.
-	 *
-	 * @providesModule getEventModifierState
-	 * @typechecks static-only
-	 */
-
-	"use strict";
-
-	/**
-	 * Translation from modifier key to the associated property in the event.
-	 * @see http://www.w3.org/TR/DOM-Level-3-Events/#keys-Modifiers
-	 */
-
-	var modifierKeyToProp = {
-	  'Alt': 'altKey',
-	  'Control': 'ctrlKey',
-	  'Meta': 'metaKey',
-	  'Shift': 'shiftKey'
-	};
-
-	// IE8 does not implement getModifierState so we simply map it to the only
-	// modifier keys exposed by the event itself, does not support Lock-keys.
-	// Currently, all major browsers except Chrome seems to support Lock-keys.
-	function modifierStateGetter(keyArg) {
-	  /*jshint validthis:true */
-	  var syntheticEvent = this;
-	  var nativeEvent = syntheticEvent.nativeEvent;
-	  if (nativeEvent.getModifierState) {
-	    return nativeEvent.getModifierState(keyArg);
-	  }
-	  var keyProp = modifierKeyToProp[keyArg];
-	  return keyProp ? !!nativeEvent[keyProp] : false;
-	}
-
-	function getEventModifierState(nativeEvent) {
-	  return modifierStateGetter;
-	}
-
-	module.exports = getEventModifierState;
-
-
-/***/ },
-/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43502,7 +43444,7 @@
 
 
 /***/ },
-/* 184 */
+/* 183 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -43538,6 +43480,64 @@
 	}
 
 	module.exports = focusNode;
+
+
+/***/ },
+/* 184 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013 Facebook, Inc.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 * http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 * @providesModule getEventModifierState
+	 * @typechecks static-only
+	 */
+
+	"use strict";
+
+	/**
+	 * Translation from modifier key to the associated property in the event.
+	 * @see http://www.w3.org/TR/DOM-Level-3-Events/#keys-Modifiers
+	 */
+
+	var modifierKeyToProp = {
+	  'Alt': 'altKey',
+	  'Control': 'ctrlKey',
+	  'Meta': 'metaKey',
+	  'Shift': 'shiftKey'
+	};
+
+	// IE8 does not implement getModifierState so we simply map it to the only
+	// modifier keys exposed by the event itself, does not support Lock-keys.
+	// Currently, all major browsers except Chrome seems to support Lock-keys.
+	function modifierStateGetter(keyArg) {
+	  /*jshint validthis:true */
+	  var syntheticEvent = this;
+	  var nativeEvent = syntheticEvent.nativeEvent;
+	  if (nativeEvent.getModifierState) {
+	    return nativeEvent.getModifierState(keyArg);
+	  }
+	  var keyProp = modifierKeyToProp[keyArg];
+	  return keyProp ? !!nativeEvent[keyProp] : false;
+	}
+
+	function getEventModifierState(nativeEvent) {
+	  return modifierStateGetter;
+	}
+
+	module.exports = getEventModifierState;
 
 
 /***/ },
@@ -45736,8 +45736,8 @@
 
 	var jQuery = __webpack_require__(167);
 	__webpack_require__(199);
-	__webpack_require__(201);
 	__webpack_require__(200);
+	__webpack_require__(201);
 
 	/*!
 	 * jQuery UI Draggable 1.10.4
@@ -46705,8 +46705,8 @@
 
 	var jQuery = __webpack_require__(167);
 	__webpack_require__(199);
-	__webpack_require__(200);
 	__webpack_require__(201);
+	__webpack_require__(200);
 	__webpack_require__(194);
 
 	/*!
@@ -47719,6 +47719,184 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var jQuery = __webpack_require__(167);
+	__webpack_require__(201);
+
+	/*!
+	 * jQuery UI Mouse 1.10.4
+	 * http://jqueryui.com
+	 *
+	 * Copyright 2014 jQuery Foundation and other contributors
+	 * Released under the MIT license.
+	 * http://jquery.org/license
+	 *
+	 * http://api.jqueryui.com/mouse/
+	 *
+	 * Depends:
+	 *	jquery.ui.widget.js
+	 */
+	(function( $, undefined ) {
+
+	var mouseHandled = false;
+	$( document ).mouseup( function() {
+		mouseHandled = false;
+	});
+
+	$.widget("ui.mouse", {
+		version: "1.10.4",
+		options: {
+			cancel: "input,textarea,button,select,option",
+			distance: 1,
+			delay: 0
+		},
+		_mouseInit: function() {
+			var that = this;
+
+			this.element
+				.bind("mousedown."+this.widgetName, function(event) {
+					return that._mouseDown(event);
+				})
+				.bind("click."+this.widgetName, function(event) {
+					if (true === $.data(event.target, that.widgetName + ".preventClickEvent")) {
+						$.removeData(event.target, that.widgetName + ".preventClickEvent");
+						event.stopImmediatePropagation();
+						return false;
+					}
+				});
+
+			this.started = false;
+		},
+
+		// TODO: make sure destroying one instance of mouse doesn't mess with
+		// other instances of mouse
+		_mouseDestroy: function() {
+			this.element.unbind("."+this.widgetName);
+			if ( this._mouseMoveDelegate ) {
+				$(document)
+					.unbind("mousemove."+this.widgetName, this._mouseMoveDelegate)
+					.unbind("mouseup."+this.widgetName, this._mouseUpDelegate);
+			}
+		},
+
+		_mouseDown: function(event) {
+			// don't let more than one widget handle mouseStart
+			if( mouseHandled ) { return; }
+
+			// we may have missed mouseup (out of window)
+			(this._mouseStarted && this._mouseUp(event));
+
+			this._mouseDownEvent = event;
+
+			var that = this,
+				btnIsLeft = (event.which === 1),
+				// event.target.nodeName works around a bug in IE 8 with
+				// disabled inputs (#7620)
+				elIsCancel = (typeof this.options.cancel === "string" && event.target.nodeName ? $(event.target).closest(this.options.cancel).length : false);
+			if (!btnIsLeft || elIsCancel || !this._mouseCapture(event)) {
+				return true;
+			}
+
+			this.mouseDelayMet = !this.options.delay;
+			if (!this.mouseDelayMet) {
+				this._mouseDelayTimer = setTimeout(function() {
+					that.mouseDelayMet = true;
+				}, this.options.delay);
+			}
+
+			if (this._mouseDistanceMet(event) && this._mouseDelayMet(event)) {
+				this._mouseStarted = (this._mouseStart(event) !== false);
+				if (!this._mouseStarted) {
+					event.preventDefault();
+					return true;
+				}
+			}
+
+			// Click event may never have fired (Gecko & Opera)
+			if (true === $.data(event.target, this.widgetName + ".preventClickEvent")) {
+				$.removeData(event.target, this.widgetName + ".preventClickEvent");
+			}
+
+			// these delegates are required to keep context
+			this._mouseMoveDelegate = function(event) {
+				return that._mouseMove(event);
+			};
+			this._mouseUpDelegate = function(event) {
+				return that._mouseUp(event);
+			};
+			$(document)
+				.bind("mousemove."+this.widgetName, this._mouseMoveDelegate)
+				.bind("mouseup."+this.widgetName, this._mouseUpDelegate);
+
+			event.preventDefault();
+
+			mouseHandled = true;
+			return true;
+		},
+
+		_mouseMove: function(event) {
+			// IE mouseup check - mouseup happened when mouse was out of window
+			if ($.ui.ie && ( !document.documentMode || document.documentMode < 9 ) && !event.button) {
+				return this._mouseUp(event);
+			}
+
+			if (this._mouseStarted) {
+				this._mouseDrag(event);
+				return event.preventDefault();
+			}
+
+			if (this._mouseDistanceMet(event) && this._mouseDelayMet(event)) {
+				this._mouseStarted =
+					(this._mouseStart(this._mouseDownEvent, event) !== false);
+				(this._mouseStarted ? this._mouseDrag(event) : this._mouseUp(event));
+			}
+
+			return !this._mouseStarted;
+		},
+
+		_mouseUp: function(event) {
+			$(document)
+				.unbind("mousemove."+this.widgetName, this._mouseMoveDelegate)
+				.unbind("mouseup."+this.widgetName, this._mouseUpDelegate);
+
+			if (this._mouseStarted) {
+				this._mouseStarted = false;
+
+				if (event.target === this._mouseDownEvent.target) {
+					$.data(event.target, this.widgetName + ".preventClickEvent", true);
+				}
+
+				this._mouseStop(event);
+			}
+
+			return false;
+		},
+
+		_mouseDistanceMet: function(event) {
+			return (Math.max(
+					Math.abs(this._mouseDownEvent.pageX - event.pageX),
+					Math.abs(this._mouseDownEvent.pageY - event.pageY)
+				) >= this.options.distance
+			);
+		},
+
+		_mouseDelayMet: function(/* event */) {
+			return this.mouseDelayMet;
+		},
+
+		// These are placeholder methods, to be overriden by extending plugin
+		_mouseStart: function(/* event */) {},
+		_mouseDrag: function(/* event */) {},
+		_mouseStop: function(/* event */) {},
+		_mouseCapture: function(/* event */) { return true; }
+	});
+
+	})(jQuery);
+
+
+/***/ },
+/* 201 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var jQuery = __webpack_require__(167);
 
 	/*!
 	 * jQuery UI Widget 1.10.4
@@ -48241,184 +48419,6 @@
 	});
 
 	})( jQuery );
-
-
-/***/ },
-/* 201 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var jQuery = __webpack_require__(167);
-	__webpack_require__(200);
-
-	/*!
-	 * jQuery UI Mouse 1.10.4
-	 * http://jqueryui.com
-	 *
-	 * Copyright 2014 jQuery Foundation and other contributors
-	 * Released under the MIT license.
-	 * http://jquery.org/license
-	 *
-	 * http://api.jqueryui.com/mouse/
-	 *
-	 * Depends:
-	 *	jquery.ui.widget.js
-	 */
-	(function( $, undefined ) {
-
-	var mouseHandled = false;
-	$( document ).mouseup( function() {
-		mouseHandled = false;
-	});
-
-	$.widget("ui.mouse", {
-		version: "1.10.4",
-		options: {
-			cancel: "input,textarea,button,select,option",
-			distance: 1,
-			delay: 0
-		},
-		_mouseInit: function() {
-			var that = this;
-
-			this.element
-				.bind("mousedown."+this.widgetName, function(event) {
-					return that._mouseDown(event);
-				})
-				.bind("click."+this.widgetName, function(event) {
-					if (true === $.data(event.target, that.widgetName + ".preventClickEvent")) {
-						$.removeData(event.target, that.widgetName + ".preventClickEvent");
-						event.stopImmediatePropagation();
-						return false;
-					}
-				});
-
-			this.started = false;
-		},
-
-		// TODO: make sure destroying one instance of mouse doesn't mess with
-		// other instances of mouse
-		_mouseDestroy: function() {
-			this.element.unbind("."+this.widgetName);
-			if ( this._mouseMoveDelegate ) {
-				$(document)
-					.unbind("mousemove."+this.widgetName, this._mouseMoveDelegate)
-					.unbind("mouseup."+this.widgetName, this._mouseUpDelegate);
-			}
-		},
-
-		_mouseDown: function(event) {
-			// don't let more than one widget handle mouseStart
-			if( mouseHandled ) { return; }
-
-			// we may have missed mouseup (out of window)
-			(this._mouseStarted && this._mouseUp(event));
-
-			this._mouseDownEvent = event;
-
-			var that = this,
-				btnIsLeft = (event.which === 1),
-				// event.target.nodeName works around a bug in IE 8 with
-				// disabled inputs (#7620)
-				elIsCancel = (typeof this.options.cancel === "string" && event.target.nodeName ? $(event.target).closest(this.options.cancel).length : false);
-			if (!btnIsLeft || elIsCancel || !this._mouseCapture(event)) {
-				return true;
-			}
-
-			this.mouseDelayMet = !this.options.delay;
-			if (!this.mouseDelayMet) {
-				this._mouseDelayTimer = setTimeout(function() {
-					that.mouseDelayMet = true;
-				}, this.options.delay);
-			}
-
-			if (this._mouseDistanceMet(event) && this._mouseDelayMet(event)) {
-				this._mouseStarted = (this._mouseStart(event) !== false);
-				if (!this._mouseStarted) {
-					event.preventDefault();
-					return true;
-				}
-			}
-
-			// Click event may never have fired (Gecko & Opera)
-			if (true === $.data(event.target, this.widgetName + ".preventClickEvent")) {
-				$.removeData(event.target, this.widgetName + ".preventClickEvent");
-			}
-
-			// these delegates are required to keep context
-			this._mouseMoveDelegate = function(event) {
-				return that._mouseMove(event);
-			};
-			this._mouseUpDelegate = function(event) {
-				return that._mouseUp(event);
-			};
-			$(document)
-				.bind("mousemove."+this.widgetName, this._mouseMoveDelegate)
-				.bind("mouseup."+this.widgetName, this._mouseUpDelegate);
-
-			event.preventDefault();
-
-			mouseHandled = true;
-			return true;
-		},
-
-		_mouseMove: function(event) {
-			// IE mouseup check - mouseup happened when mouse was out of window
-			if ($.ui.ie && ( !document.documentMode || document.documentMode < 9 ) && !event.button) {
-				return this._mouseUp(event);
-			}
-
-			if (this._mouseStarted) {
-				this._mouseDrag(event);
-				return event.preventDefault();
-			}
-
-			if (this._mouseDistanceMet(event) && this._mouseDelayMet(event)) {
-				this._mouseStarted =
-					(this._mouseStart(this._mouseDownEvent, event) !== false);
-				(this._mouseStarted ? this._mouseDrag(event) : this._mouseUp(event));
-			}
-
-			return !this._mouseStarted;
-		},
-
-		_mouseUp: function(event) {
-			$(document)
-				.unbind("mousemove."+this.widgetName, this._mouseMoveDelegate)
-				.unbind("mouseup."+this.widgetName, this._mouseUpDelegate);
-
-			if (this._mouseStarted) {
-				this._mouseStarted = false;
-
-				if (event.target === this._mouseDownEvent.target) {
-					$.data(event.target, this.widgetName + ".preventClickEvent", true);
-				}
-
-				this._mouseStop(event);
-			}
-
-			return false;
-		},
-
-		_mouseDistanceMet: function(event) {
-			return (Math.max(
-					Math.abs(this._mouseDownEvent.pageX - event.pageX),
-					Math.abs(this._mouseDownEvent.pageY - event.pageY)
-				) >= this.options.distance
-			);
-		},
-
-		_mouseDelayMet: function(/* event */) {
-			return this.mouseDelayMet;
-		},
-
-		// These are placeholder methods, to be overriden by extending plugin
-		_mouseStart: function(/* event */) {},
-		_mouseDrag: function(/* event */) {},
-		_mouseStop: function(/* event */) {},
-		_mouseCapture: function(/* event */) { return true; }
-	});
-
-	})(jQuery);
 
 
 /***/ },
