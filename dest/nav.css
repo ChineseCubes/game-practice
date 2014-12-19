@@ -601,6 +601,9 @@ body {
   top: auto;
   bottom: 0;
 }
+.preload {
+  display: none;
+}
 .navigator {
   position: relative;
   width: 100%;
@@ -608,18 +611,18 @@ body {
   line-height: 3rem;
   font-size: 2rem;
   color: #fff;
-  background-color: #2badad;
+  background-color: #91b170;
 }
 .navigator > .back {
   display: inline-block;
   cursor: pointer;
   width: 5rem;
   height: 100%;
-  border-right: 0.2rem solid #259696;
+  border-right: 0.2rem solid #7ca25a;
   text-align: center;
 }
 .navigator > .back:active {
-  background-color: #33d6d6;
+  background-color: #c3d6b2;
 }
 .navigator > .back:before {
   content: '<';
@@ -656,47 +659,66 @@ body {
 }
 .navigator.disabled {
   pointer-events: none;
-  color: #259696;
+  color: #7ca25a;
 }
 .title-screen {
   height: 100%;
-  -webkit-background-size: 80vw auto;
-  -moz-background-size: 80vw auto;
-  background-size: 80vw auto;
+  -webkit-background-size: 45vw auto;
+  -moz-background-size: 45vw auto;
+  background-size: 45vw auto;
   background-repeat: no-repeat;
-  background-position: 50% 20%;
+  background-position: 50% 10%;
 }
 .title-screen > .buttons {
   position: absolute;
+  top: 20vh;
   left: 0;
-  bottom: 10vh;
+  bottom: 0;
   right: 0;
   margin: auto;
-  width: 15rem;
-  height: 5.5rem;
+  width: 71vw;
+  height: 25vw;
 }
 .title-screen > .buttons > .button {
-  display: block;
-  width: 15rem;
-  height: 3rem;
-  line-height: 3rem;
-  margin-bottom: 1rem;
-  -webkit-border-radius: 1rem;
-  border-radius: 1rem;
+  display: inline-block;
+  width: 100vw;
+  margin-right: 3vw;
   color: #fff;
-  background-color: #2badad;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
   text-align: center;
+  text-indent: -14292em;
 }
 .title-screen > .buttons > .button.disabled {
   pointer-events: none;
-  background-color: #808080;
 }
 .title-screen > .buttons > .button:last-child {
-  margin-bottom: 0;
+  margin-right: 0;
+}
+.title-screen > .buttons > .button.settings,
+.title-screen > .buttons > .button.achievements {
+  width: 20vw;
+  height: 20vw;
+  line-height: 20vw;
 }
 .title-screen > .buttons > .button.settings {
-  height: 3rem;
-  line-height: 3rem;
+  background-image: url("../images/buttons/chosemode.svg");
+}
+.title-screen > .buttons > .button.achievements {
+  background-image: url("../images/buttons/achievements.svg");
+}
+.title-screen > .buttons > .button.achievements.disabled {
+  background-image: url("../images/buttons/achievements-disabled.svg");
+}
+.title-screen > .buttons > .button.start {
+  width: 25vw;
+  height: 25vw;
+  line-height: 25vw;
+  background-image: url("../images/buttons/start.svg");
+}
+.title-screen > .buttons > .button.start.disabled {
+  background-image: url("../images/buttons/start-disabled.svg");
 }
 .title-screen > .buttons > .button > a {
   display: block;
@@ -706,10 +728,15 @@ body {
 .title-screen > .buttons > .button > a:hover {
   text-decoration: underline;
 }
+.levels-screen > .levels {
+  width: 70vw;
+  margin: 0 auto;
+}
 .levels-screen > .levels > .level {
   position: relative;
-  padding-left: 16vw;
-  border-bottom: 0.5vh solid #e6e6e6;
+  padding-top: 4vh;
+  padding-bottom: 4vh;
+  border-bottom: 1px solid #d1daca;
 }
 .levels-screen > .levels > .level > .id,
 .levels-screen > .levels > .level > .challenges,
@@ -718,24 +745,25 @@ body {
   display: inline-block;
 }
 .levels-screen > .levels > .level > .id {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 16vw;
-  height: 16vw;
-  padding-top: 7vw;
-  font-size: 3vw;
-  font-weight: bold;
-  text-align: center;
-  color: #f6484b;
+  font-size: 3vh;
+  font-weight: lighter;
+  vertical-align: top;
+  width: 8vw;
+  color: #fff;
+}
+.levels-screen > .levels > .level > .challenges > .challenge {
+  margin-right: 3vw;
+}
+.levels-screen > .levels > .level > .challenges > .challenge:last-child {
+  margin-right: 0;
 }
 .levels-screen > .levels > .level > .challenges > .challenge > a {
   -webkit-background-size: cover;
   -moz-background-size: cover;
   background-size: cover;
-  width: 16vw;
-  height: 16vw;
-  line-height: 16vw;
+  width: 10vw;
+  height: 10vw;
+  line-height: 10vw;
 }
 .settings-screen > form.settings {
   position: absolute;
@@ -744,8 +772,8 @@ body {
   bottom: 0;
   right: 0;
   margin: auto;
-  width: 80%;
-  height: 11rem;
+  width: 44vw;
+  height: 20vw;
 }
 .settings-screen > form.settings > input[type="radio"] {
   -webkit-appearance: none;
@@ -753,30 +781,34 @@ body {
   appearance: none;
   outline: none;
   display: block;
-  width: 100%;
-  height: 5rem;
-  line-height: 5rem;
-  margin-left: 10%;
-  -webkit-border-radius: 1rem;
-  border-radius: 1rem;
+  float: left;
+  width: 20vw;
+  height: 20vw;
+  text-indent: -14292em;
   color: #fff;
-  background-color: #808080;
-  margin: 0 0 1rem 0;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  background-size: cover;
+  margin: 0;
+  margin-right: 3vw;
 }
 .settings-screen > form.settings > input[type="radio"]:last-child {
-  margin: 0;
+  margin-right: 0;
 }
-.settings-screen > form.settings > input[type="radio"]:before {
-  display: inline-block;
-  width: 3rem;
-  text-align: center;
-  content: '';
+.settings-screen > form.settings > input[type="radio"].standard {
+  background-image: url("../images/buttons/standardmode-disabled.svg");
 }
-.settings-screen > form.settings > input[type="radio"]:checked:before {
-  content: '💡';
+.settings-screen > form.settings > input[type="radio"].standard:checked {
+  background-image: url("../images/buttons/standardmode.svg");
 }
 .settings-screen > form.settings > input[type="radio"].standard:after {
   content: 'Standard Mode';
+}
+.settings-screen > form.settings > input[type="radio"].hint {
+  background-image: url("../images/buttons/hintmode-disabled.svg");
+}
+.settings-screen > form.settings > input[type="radio"].hint:checked {
+  background-image: url("../images/buttons/hintmode.svg");
 }
 .settings-screen > form.settings > input[type="radio"].hint:after {
   content: 'Hint Mode';
@@ -787,7 +819,10 @@ body {
 }
 .game > .view {
   position: absolute;
-  background-color: #f2f2f2;
+  background-color: #9ebd81;
+  border-color: #91b170;
+  border-style: solid;
+  border-bottom-width: 1vh;
   top: 3rem;
   left: 0;
   bottom: 0;
